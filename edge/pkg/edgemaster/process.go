@@ -12,8 +12,8 @@ import (
 	"k8s.io/klog/v2"
 )
 
-func (em *EdgeMaster) process(msg model.Message) {
-	resourceType, err := messagelayer.GetResourceType(msg)
+func (em *EdgeMaster) process(msg *model.Message) {
+	resourceType, err := messagelayer.GetResourceType(*msg)
 	if err != nil {
 		klog.Warningf("parse message: %s resource type with error, message resource: %s, err: %v", msg.GetID(), msg.GetResource(), err)
 		return
@@ -26,20 +26,20 @@ func (em *EdgeMaster) process(msg model.Message) {
 	case model.ResourceTypeNode:
 		// todo
 	default:
-		beehiveContext.SendToGroup(modules.MetaGroup, msg)
+		beehiveContext.SendToGroup(modules.MetaGroup, *msg)
 	}
 	if err != nil {
 		klog.Warningf("process message: %s resource type with error, message resource: %s, err: %v", msg.GetID(), msg.GetResource(), err)
 	}
 }
 
-func (em *EdgeMaster) processPodMsg(msg model.Message) error {
-	namespace, err := messagelayer.GetNamespace(msg)
+func (em *EdgeMaster) processPodMsg(msg *model.Message) error {
+	namespace, err := messagelayer.GetNamespace(*msg)
 	if err != nil {
 		klog.Warningf("message: %s process failure, get namespace failed with error: %v", msg.GetID(), err)
 		return err
 	}
-	name, err := messagelayer.GetResourceName(msg)
+	name, err := messagelayer.GetResourceName(*msg)
 	if err != nil {
 		klog.Warningf("message: %s process failure, get resource name failed with error: %v", msg.GetID(), err)
 		return err

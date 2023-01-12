@@ -97,7 +97,7 @@ type Modules struct {
 	// +Required
 	EdgeStream *EdgeStream `json:"edgeStream,omitempty"`
 	// EdgeMaster indicates edgemaster module config
-	EdgeMaster *EdgeMaster `json:"EdgeMaster,omitempty"`
+	EdgeMaster *EdgeMaster `json:"edgeMaster,omitempty"`
 }
 
 // Edged indicates the config fo edged module

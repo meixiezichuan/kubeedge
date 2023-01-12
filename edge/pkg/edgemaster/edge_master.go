@@ -74,8 +74,8 @@ func (em *EdgeMaster) Start() {
 				klog.Errorf("get a message %+v: %v", msg, err)
 				continue
 			}
-			klog.V(2).Infof("get a message %+v", msg)
-			em.process(msg)
+			klog.V(2).Infof("EdgeMaster get a message %+v", msg)
+			em.process(&msg)
 		}
 	}()
 }
