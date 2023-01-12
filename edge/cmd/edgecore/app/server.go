@@ -20,6 +20,7 @@ import (
 	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin"
 	"github.com/kubeedge/kubeedge/edge/pkg/edged"
 	"github.com/kubeedge/kubeedge/edge/pkg/edgehub"
+	"github.com/kubeedge/kubeedge/edge/pkg/edgemaster"
 	"github.com/kubeedge/kubeedge/edge/pkg/edgestream"
 	"github.com/kubeedge/kubeedge/edge/pkg/eventbus"
 	"github.com/kubeedge/kubeedge/edge/pkg/metamanager"
@@ -170,6 +171,7 @@ func registerModules(c *v1alpha2.EdgeCoreConfig) {
 	metamanager.Register(c.Modules.MetaManager)
 	servicebus.Register(c.Modules.ServiceBus)
 	edgestream.Register(c.Modules.EdgeStream, c.Modules.Edged.HostnameOverride, c.Modules.Edged.NodeIP)
+	edgemaster.Register(c.Modules.EdgeMaster, c.Modules.Edged.HostnameOverride)
 	test.Register(c.Modules.DBTest)
 	// Note: Need to put it to the end, and wait for all models to register before executing
 	dbm.InitDBConfig(c.DataBase.DriverName, c.DataBase.AliasName, c.DataBase.DataSource)
