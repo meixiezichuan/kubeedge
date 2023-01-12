@@ -65,7 +65,7 @@ func (*defaultHandler) Process(message *model.Message, clientHub clients.Adapter
 	md := ""
 	switch group {
 	case messagepkg.ResourceGroupName:
-		md = modules.MetaGroup
+		md = modules.MasterGroup
 	case messagepkg.TwinGroupName:
 		md = modules.TwinGroup
 	case messagepkg.FuncGroupName:
