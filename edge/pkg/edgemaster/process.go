@@ -3,8 +3,10 @@ package edgemaster
 import (
 	"context"
 	"encoding/json"
+	beehiveContext "github.com/kubeedge/beehive/pkg/core/context"
 	"github.com/kubeedge/beehive/pkg/core/model"
 	"github.com/kubeedge/kubeedge/cloud/pkg/common/messagelayer"
+	"github.com/kubeedge/kubeedge/edge/pkg/common/modules"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog/v2"
@@ -23,7 +25,8 @@ func (em *EdgeMaster) process(msg model.Message) {
 		err = em.processPodMsg(msg)
 	case model.ResourceTypeNode:
 		// todo
-
+	default:
+		beehiveContext.SendToGroup(modules.MetaGroup, msg)
 	}
 	if err != nil {
 		klog.Warningf("process message: %s resource type with error, message resource: %s, err: %v", msg.GetID(), msg.GetResource(), err)
