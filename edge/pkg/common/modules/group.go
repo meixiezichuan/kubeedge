@@ -15,4 +15,6 @@ const (
 	UserGroup = "user"
 	// StreamGroup group
 	StreamGroup = "edgestream"
+	// edgeMaster group
+	MasterGroup = "master"
 )

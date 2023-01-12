@@ -492,3 +492,15 @@ type EdgeStream struct {
 	// default 15
 	WriteDeadline int32 `json:"writeDeadline,omitempty"`
 }
+
+// EdgeMaster indicates edge cluster master
+type EdgeMaster struct {
+	// Enable indicates whether edgeMaster is enabled, if set to false (for debugging etc.), skip checking other configs.
+	// default false
+	Enable bool `json:"enable"`
+	// Cluster config indicates the directory of kubeConfig file for edge cluster
+	ClusterConfig string `json:"clusterConfig"`
+	// HandshakeTimeout indicates handshake timeout (second)
+	// default 30
+	HandshakeTimeout int32 `json:"handshakeTimeout,omitempty"`
+}

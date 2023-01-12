@@ -15,4 +15,6 @@ const (
 	EdgeHubModuleName = "websocket"
 	// MetaManagerModuleName metamanager module name
 	MetaManagerModuleName = "metamanager"
+	// EdgeMasterModuleName name
+	EdgeMasterModuleName = "master"
 )
