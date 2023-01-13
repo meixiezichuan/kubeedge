@@ -5,17 +5,18 @@ import (
 	"encoding/json"
 	beehiveContext "github.com/kubeedge/beehive/pkg/core/context"
 	"github.com/kubeedge/beehive/pkg/core/model"
-	"github.com/kubeedge/kubeedge/cloud/pkg/common/messagelayer"
 	"github.com/kubeedge/kubeedge/edge/pkg/common/modules"
+	"github.com/kubeedge/kubeedge/edge/pkg/common/util"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog/v2"
 )
 
 func (em *EdgeMaster) process(msg *model.Message) {
-	resourceType, err := messagelayer.GetResourceType(*msg)
+	_, resourceType, _, err := util.ParseResourceEdge(msg.GetResource(), msg.GetOperation())
 	if err != nil {
-		klog.Warningf("parse message: %s resource type with error, message resource: %s, err: %v", msg.GetID(), msg.GetResource(), err)
+		klog.Warningf("EdgeMaster parse message: %s resource type with error, message resource: %s, err: %v", msg.GetID(), msg.GetResource(), err)
 		return
 	}
 
@@ -34,14 +35,9 @@ func (em *EdgeMaster) process(msg *model.Message) {
 }
 
 func (em *EdgeMaster) processPodMsg(msg *model.Message) error {
-	namespace, err := messagelayer.GetNamespace(*msg)
+	namespace, _, name, err := util.ParseResourceEdge(msg.GetResource(), msg.GetOperation())
 	if err != nil {
-		klog.Warningf("message: %s process failure, get namespace failed with error: %v", msg.GetID(), err)
-		return err
-	}
-	name, err := messagelayer.GetResourceName(*msg)
-	if err != nil {
-		klog.Warningf("message: %s process failure, get resource name failed with error: %v", msg.GetID(), err)
+		klog.Warningf("EdgeMaster message: %s process failure, get resource name failed with error: %v", msg.GetID(), err)
 		return err
 	}
 	switch msg.GetOperation() {
