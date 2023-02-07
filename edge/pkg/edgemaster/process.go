@@ -55,9 +55,12 @@ func (em *EdgeMaster) processPodMsg(msg *model.Message) error {
 		}
 		// remove NodeName of pod
 		pod.Spec.NodeName = ""
+		// remove resourceVersion of pod
+		pod.ResourceVersion = ""
 		_, err = em.clusterClient.CoreV1().Pods(namespace).Create(context.TODO(), &pod, metav1.CreateOptions{})
 		if err != nil {
 			klog.Errorf("message %s send to edge cluster with error : %v", msg.GetID(), err)
+			klog.Errorf("EdgeMaster create pod %v with error : %v", pod, msg.GetID())
 			return err
 		}
 	case model.DeleteOperation:
