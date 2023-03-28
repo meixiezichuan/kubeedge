@@ -448,9 +448,6 @@ func (uc *UpstreamController) updatePodStatus() {
 						}
 					}
 				}
-			//TODO case AddOperation
-			//TODO case DeleteOperation
-
 			default:
 				klog.Warningf("message: %s process failure, pod status operation: %s unsupported", msg.GetID(), msg.GetOperation())
 				continue

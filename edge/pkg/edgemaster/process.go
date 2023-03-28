@@ -8,11 +8,11 @@ import (
 	"github.com/kubeedge/beehive/pkg/core/model"
 	"github.com/kubeedge/kubeedge/edge/pkg/common/modules"
 	"github.com/kubeedge/kubeedge/edge/pkg/common/util"
-	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/tools/cache"
 	"time"
 
+	edgeapi "github.com/kubeedge/kubeedge/common/types"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog/v2"
@@ -51,7 +51,7 @@ func (em *EdgeMaster) processPodMsg(msg *model.Message) error {
 	}
 	switch msg.GetOperation() {
 	case model.InsertOperation:
-		// TODO dispatch-strategy 最低的优先级
+		// TODO dispatch-strategy
 		newBytes, err := msg.GetContentData()
 		if err != nil {
 			klog.Warningf("message: %s process failure, get data failed with error: %v", msg.GetID(), err)
@@ -203,13 +203,9 @@ func (em *EdgeMaster) processSecretMsg(msg *model.Message) error {
 
 func (em *EdgeMaster) podMonitor() {
 
-	// 设置 Pod Informer
-	stopCh := make(chan struct{})
-	defer close(stopCh)
 	sharedInformers := informers.NewSharedInformerFactory(em.clusterClient, time.Minute*10)
 
 	podInformer := sharedInformers.Core().V1().Pods().Informer()
-	//TODO 封装message
 	podInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			pod := obj.(*corev1.Pod)
@@ -219,40 +215,52 @@ func (em *EdgeMaster) podMonitor() {
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
+			//逻辑没捋顺，现在只考虑PodStatus发生变化的情况
+
 			oldPod := oldObj.(*corev1.Pod)
 			newPod := newObj.(*corev1.Pod)
-			fmt.Printf("Pod updated: %s -> %s\n", oldPod.Name, newPod.Name)
-			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypePod, model.UpdateOperation)
-			info.FillBody(&newPod)
+
+			podStatus := edgeapi.PodStatusRequest{
+				UID:    oldPod.UID,  // Pod 的唯一标识符
+				Name:   oldPod.Name, // Pod 的名称
+				Status: newPod.Status,
+			}
+
+			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypePodStatus, model.UpdateOperation)
+			info.FillBody(&podStatus)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
 		},
 		DeleteFunc: func(obj interface{}) {
 			pod := obj.(*corev1.Pod)
-			fmt.Printf("Pod deleted: %s\n", pod.Name)
+			klog.Infof("Pod deleted: %s\n", pod.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypePod, model.DeleteOperation)
 			info.FillBody(&pod)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
 		},
 	})
 
-	// 启动 Informer
-	sharedInformers.Start(stopCh)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	// 运行直到中断
-	runtime.HandleCrash()
-	<-stopCh
+	// 启动 Informer
+	go podInformer.Run(ctx.Done())
+
+	if !cache.WaitForCacheSync(ctx.Done(), podInformer.HasSynced) {
+		panic("Timed out waiting for caches to sync")
+	}
+
+	<-ctx.Done()
 }
 
 func (em *EdgeMaster) configMapMonitor() {
-	stopCh := make(chan struct{})
-	defer close(stopCh)
+
 	sharedInformers := informers.NewSharedInformerFactory(em.clusterClient, time.Minute*10)
 
 	cmInformer := sharedInformers.Core().V1().ConfigMaps().Informer()
 	cmInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			cm := obj.(*corev1.ConfigMap)
-			fmt.Printf("ConfigMap added: %s\n", cm.Name)
+			klog.Infof("ConfigMap added: %s\n", cm.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypeConfigmap, model.InsertOperation)
 			info.FillBody(&cm)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
@@ -260,38 +268,42 @@ func (em *EdgeMaster) configMapMonitor() {
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			oldCM := oldObj.(*corev1.ConfigMap)
 			newCM := newObj.(*corev1.ConfigMap)
-			fmt.Printf("ConfigMap updated: %s -> %s\n", oldCM.Name, newCM.Name)
+			klog.Infof("ConfigMap updated: %s -> %s\n", oldCM.Name, newCM.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypeConfigmap, model.UpdateOperation)
 			info.FillBody(&newCM)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
 		},
 		DeleteFunc: func(obj interface{}) {
 			cm := obj.(*corev1.ConfigMap)
-			fmt.Printf("ConfigMap deleted: %s\n", cm.Name)
+			klog.Infof("ConfigMap deleted: %s\n", cm.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypeConfigmap, model.DeleteOperation)
 			info.FillBody(&cm)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
 		},
 	})
 
-	// 启动 Informer
-	sharedInformers.Start(stopCh)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	// 运行直到中断
-	runtime.HandleCrash()
-	<-stopCh
+	// 启动 Informer
+	go cmInformer.Run(ctx.Done())
+
+	if !cache.WaitForCacheSync(ctx.Done(), cmInformer.HasSynced) {
+		panic("Timed out waiting for caches to sync")
+	}
+
+	<-ctx.Done()
 }
 
 func (em *EdgeMaster) secretMonitor() {
-	stopCh := make(chan struct{})
-	defer close(stopCh)
+
 	sharedInformers := informers.NewSharedInformerFactory(em.clusterClient, time.Minute*10)
 
-	cmInformer := sharedInformers.Core().V1().Secrets().Informer()
-	cmInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
+	secretInformer := sharedInformers.Core().V1().Secrets().Informer()
+	secretInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			secret := obj.(*corev1.Secret)
-			fmt.Printf("Secret added: %s\n", secret.Name)
+			klog.Infof("Secret added: %s\n", secret.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypeSecret, model.InsertOperation)
 			info.FillBody(&secret)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
@@ -299,24 +311,29 @@ func (em *EdgeMaster) secretMonitor() {
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			oldSecret := oldObj.(*corev1.Secret)
 			newSecret := newObj.(*corev1.Secret)
-			fmt.Printf("Secret updated: %s -> %s\n", oldSecret.Name, newSecret.Name)
+			klog.Infof("Secret updated: %s -> %s\n", oldSecret.Name, newSecret.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypeSecret, model.UpdateOperation)
 			info.FillBody(&newSecret)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
 		},
 		DeleteFunc: func(obj interface{}) {
 			secret := obj.(*corev1.ConfigMap)
-			fmt.Printf("Secret deleted: %s\n", secret.Name)
+			klog.Infof("Secret deleted: %s\n", secret.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypeSecret, model.DeleteOperation)
 			info.FillBody(&secret)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
 		},
 	})
 
-	// 启动 Informer
-	sharedInformers.Start(stopCh)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	// 运行直到中断
-	runtime.HandleCrash()
-	<-stopCh
+	// 启动 Informer
+	go secretInformer.Run(ctx.Done())
+
+	if !cache.WaitForCacheSync(ctx.Done(), secretInformer.HasSynced) {
+		panic("Timed out waiting for caches to sync")
+	}
+
+	<-ctx.Done()
 }
