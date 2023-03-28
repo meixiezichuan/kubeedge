@@ -257,6 +257,7 @@ func (uc *UpstreamController) dispatchMessage() {
 				uc.podDeleteChan <- msg
 			} else {
 				klog.Errorf("message: %s, operation type: %s unsupported", msg.GetID(), msg.GetOperation())
+				//TODO add handler
 			}
 		case model.ResourceTypeRuleStatus:
 			uc.ruleStatusChan <- msg
@@ -447,6 +448,8 @@ func (uc *UpstreamController) updatePodStatus() {
 						}
 					}
 				}
+			//TODO case AddOperation
+			//TODO case DeleteOperation
 
 			default:
 				klog.Warningf("message: %s process failure, pod status operation: %s unsupported", msg.GetID(), msg.GetOperation())

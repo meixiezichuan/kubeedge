@@ -33,18 +33,18 @@ func Register(em *v1alpha2.EdgeMaster, nodeName string) {
 }
 
 // Name returns the name of EdgeMaster module
-func (eh *EdgeMaster) Name() string {
+func (em *EdgeMaster) Name() string {
 	return modules.EdgeMasterModuleName
 }
 
 // Group returns EdgeMaster group
-func (eh *EdgeMaster) Group() string {
+func (em *EdgeMaster) Group() string {
 	return modules.MasterGroup
 }
 
 // Enable indicates whether this module is enabled
-func (eh *EdgeMaster) Enable() bool {
-	return eh.enable
+func (em *EdgeMaster) Enable() bool {
+	return em.enable
 }
 
 // Start sets context and starts the controller
@@ -55,12 +55,12 @@ func (em *EdgeMaster) Start() {
 		}
 	}()
 
-	config, er := clientcmd.BuildConfigFromFlags("", em.clusterConfig)
+	conf, er := clientcmd.BuildConfigFromFlags("", em.clusterConfig)
 	if er != nil {
-		klog.Error(er, "error on getting config from clusterConfig")
+		klog.Error(er, "error on getting conf from clusterConfig")
 		return
 	}
-	em.clusterClient = kubernetes.NewForConfigOrDie(config)
+	em.clusterClient = kubernetes.NewForConfigOrDie(conf)
 	go func() {
 		for {
 			select {
@@ -78,4 +78,9 @@ func (em *EdgeMaster) Start() {
 			em.process(&msg)
 		}
 	}()
+
+	//监控资源状态并上报
+	go em.podMonitor()
+	go em.configMapMonitor()
+	go em.secretMonitor()
 }
