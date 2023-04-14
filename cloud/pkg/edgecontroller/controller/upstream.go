@@ -121,6 +121,8 @@ type UpstreamController struct {
 	updateNodeChan            chan model.Message
 	patchPodChan              chan model.Message
 	podDeleteChan             chan model.Message
+	podInsertChan             chan model.Message
+	podUpdateChan             chan model.Message
 	ruleStatusChan            chan model.Message
 	createLeaseChan           chan model.Message
 	queryLeaseChan            chan model.Message
@@ -148,10 +150,10 @@ func (uc *UpstreamController) Start() error {
 		go uc.updatePodStatus()
 	}
 	for i := 0; i < int(uc.config.Load.QueryConfigMapWorkers); i++ {
-		go uc.queryConfigMap()
+		go uc.syncConfigMap()
 	}
 	for i := 0; i < int(uc.config.Load.QuerySecretWorkers); i++ {
-		go uc.querySecret()
+		go uc.syncSecret()
 	}
 	for i := 0; i < int(uc.config.Load.ServiceAccountTokenWorkers); i++ {
 		go uc.processServiceAccountToken()
@@ -182,6 +184,8 @@ func (uc *UpstreamController) Start() error {
 	}
 	for i := 0; i < int(uc.config.Load.DeletePodWorkers); i++ {
 		go uc.deletePod()
+		go uc.addPod()
+		go uc.updatePod()
 	}
 	for i := 0; i < int(uc.config.Load.CreateLeaseWorkers); i++ {
 		go uc.createOrUpdateLease()
@@ -253,11 +257,15 @@ func (uc *UpstreamController) dispatchMessage() {
 		case model.ResourceTypePodPatch:
 			uc.patchPodChan <- msg
 		case model.ResourceTypePod:
-			if msg.GetOperation() == model.DeleteOperation {
+			switch msg.GetOperation() {
+			case model.InsertOperation:
+				uc.podInsertChan <- msg
+			case model.DeleteOperation:
 				uc.podDeleteChan <- msg
-			} else {
+			case model.UpdateOperation:
+				uc.podUpdateChan <- msg
+			default:
 				klog.Errorf("message: %s, operation type: %s unsupported", msg.GetID(), msg.GetOperation())
-				//TODO add handler
 			}
 		case model.ResourceTypeRuleStatus:
 			uc.ruleStatusChan <- msg
@@ -704,26 +712,125 @@ func queryInner(uc *UpstreamController, msg model.Message, queryType string) {
 	}
 }
 
-func (uc *UpstreamController) queryConfigMap() {
+func (uc *UpstreamController) syncConfigMap() {
 	for {
 		select {
 		case <-beehiveContext.Done():
-			klog.Warning("stop queryConfigMap")
+			klog.Warning("stop syncConfigMap")
 			return
 		case msg := <-uc.configMapChan:
-			queryInner(uc, msg, model.ResourceTypeConfigmap)
+			switch msg.GetOperation() {
+			case model.UpdateOperation:
+				queryInner(uc, msg, model.ResourceTypeConfigmap)
+			case model.DeleteOperation:
+				namespace, err := messagelayer.GetNamespace(msg)
+				if err != nil {
+					klog.Warningf("message: %s process failure, get namespace failed with error: %v", msg.GetID(), err)
+					continue
+				}
+				name, err := messagelayer.GetResourceName(msg)
+				if err != nil {
+					klog.Warningf("message: %s process failure, get resource name failed with error: %v", msg.GetID(), err)
+					continue
+				}
+				data, err := msg.GetContentData()
+				if err != nil {
+					klog.Warningf("message: %s process failure, get msg content failed with error: %v", msg.GetID(), err)
+					continue
+				}
+				deleteOptions := metaV1.DeleteOptions{}
+				err = json.Unmarshal(data, &deleteOptions)
+				if err != nil {
+					klog.Warningf("Failed to unmarshal deletion options from msg, configmap namespace: %s, configmap name: %s, err: %v", namespace, name, err)
+					continue
+				}
+				err = uc.kubeClient.CoreV1().ConfigMaps(namespace).Delete(context.Background(), name, deleteOptions)
+				if err != nil && !errors.IsNotFound(err) && !strings.Contains(err.Error(), "The object might have been deleted and then recreated") {
+					klog.Warningf("Failed to delete configmap, namespace: %s, name: %s, err: %v", namespace, name, err)
+					continue
+				}
+				//TODO response
+			case model.InsertOperation:
+				namespace, err := messagelayer.GetNamespace(msg)
+				if err != nil {
+					klog.Warningf("message: %s process failure, get namespace failed with error: %v", msg.GetID(), err)
+					continue
+				}
+				data, err := msg.GetContentData()
+				if err != nil {
+					klog.Warningf("message: %s process failure, get msg content failed with error: %v", msg.GetID(), err)
+					continue
+				}
+				var cm v1.ConfigMap
+				err = json.Unmarshal(data, &cm)
+				_, err = uc.kubeClient.CoreV1().ConfigMaps(namespace).Create(context.Background(), &cm, metaV1.CreateOptions{})
+				if err != nil && !errors.IsAlreadyExists(err) {
+					klog.Warningf("Failed to create configmap, namespace: %s, name: %s, err: %v", namespace, cm.Name, err)
+					continue
+				}
+			}
 		}
 	}
 }
 
-func (uc *UpstreamController) querySecret() {
+func (uc *UpstreamController) syncSecret() {
 	for {
 		select {
 		case <-beehiveContext.Done():
-			klog.Warning("stop querySecret")
+			klog.Warning("stop syncSecret")
 			return
 		case msg := <-uc.secretChan:
-			queryInner(uc, msg, model.ResourceTypeSecret)
+
+			switch msg.GetOperation() {
+			case model.UpdateOperation:
+				queryInner(uc, msg, model.ResourceTypeSecret)
+			case model.DeleteOperation:
+				namespace, err := messagelayer.GetNamespace(msg)
+				if err != nil {
+					klog.Warningf("message: %s process failure, get namespace failed with error: %v", msg.GetID(), err)
+					continue
+				}
+				name, err := messagelayer.GetResourceName(msg)
+				if err != nil {
+					klog.Warningf("message: %s process failure, get resource name failed with error: %v", msg.GetID(), err)
+					continue
+				}
+				data, err := msg.GetContentData()
+				if err != nil {
+					klog.Warningf("message: %s process failure, get msg content failed with error: %v", msg.GetID(), err)
+					continue
+				}
+				deleteOptions := metaV1.DeleteOptions{}
+				err = json.Unmarshal(data, &deleteOptions)
+				if err != nil {
+					klog.Warningf("Failed to unmarshal deletion options from msg, secret namespace: %s, secret name: %s, err: %v", namespace, name, err)
+					continue
+				}
+				err = uc.kubeClient.CoreV1().Secrets(namespace).Delete(context.Background(), name, deleteOptions)
+				if err != nil && !errors.IsNotFound(err) && !strings.Contains(err.Error(), "The object might have been deleted and then recreated") {
+					klog.Warningf("Failed to delete configmap, namespace: %s, name: %s, err: %v", namespace, name, err)
+					continue
+				}
+				//TODO response
+			case model.InsertOperation:
+				namespace, err := messagelayer.GetNamespace(msg)
+				if err != nil {
+					klog.Warningf("message: %s process failure, get namespace failed with error: %v", msg.GetID(), err)
+					continue
+				}
+				data, err := msg.GetContentData()
+				if err != nil {
+					klog.Warningf("message: %s process failure, get msg content failed with error: %v", msg.GetID(), err)
+					continue
+				}
+				var secret v1.Secret
+				err = json.Unmarshal(data, &secret)
+				_, err = uc.kubeClient.CoreV1().Secrets(namespace).Create(context.Background(), &secret, metaV1.CreateOptions{})
+				if err != nil && !errors.IsAlreadyExists(err) {
+					klog.Warningf("Failed to create secret, namespace: %s, name: %s, err: %v", namespace, secret.Name, err)
+					continue
+				}
+			}
 		}
 	}
 }
@@ -1035,6 +1142,89 @@ func (uc *UpstreamController) patchPod() {
 			}
 
 			klog.V(4).Infof("message: %s, patch pod successfully, namespace: %s, name: %s", msg.GetID(), namespace, name)
+		}
+	}
+}
+
+func (uc *UpstreamController) addPod() {
+	for {
+		select {
+		case <-beehiveContext.Done():
+			klog.Warning("stop deletePod")
+			return
+		case msg := <-uc.podInsertChan:
+			klog.V(5).Infof("message: %s, operation is: %s, and resource is %s", msg.GetID(), msg.GetOperation(), msg.GetResource())
+
+			namespace, err := messagelayer.GetNamespace(msg)
+			if err != nil {
+				klog.Warningf("message: %s process failure, get namespace failed with error: %v", msg.GetID(), err)
+				continue
+			}
+
+			data, err := msg.GetContentData()
+			if err != nil {
+				klog.Warningf("message: %s process failure, get msg content failed with error: %v", msg.GetID(), err)
+				continue
+			}
+			var pod v1.Pod
+			if err := json.Unmarshal(data, &pod); err != nil {
+				// 解析失败，处理错误
+				klog.Warningf("Failed to unmarshal deletion options from msg, pod namespace: %s, pod name: %s, err: %v", namespace, pod.Name, err)
+				continue
+			}
+
+			_, err = uc.kubeClient.CoreV1().Pods(namespace).Create(context.Background(), &pod, metaV1.CreateOptions{})
+			if err != nil && !errors.IsAlreadyExists(err) {
+				klog.Warningf("Failed to create pod, namespace: %s, name: %s, err: %v", namespace, pod.Name, err)
+				continue
+			}
+
+			//TODO response
+			//resMsg := model.NewMessage(msg.GetID()).
+			//	FillBody(common.MessageSuccessfulContent).
+			//	BuildRouter(modules.EdgeControllerModuleName, constants.GroupResource, msg.GetResource(), model.ResponseOperation)
+			//if err = uc.messageLayer.Response(*resMsg); err != nil {
+			//	klog.Errorf("Message: %s process failure, response failed with error: %v", msg.GetID(), err)
+			//	continue
+			//}
+			klog.V(4).Infof("Successfully create pod to etcd, namespace: %s, name: %s", namespace, pod.Name)
+		}
+	}
+}
+
+func (uc *UpstreamController) updatePod() {
+	for {
+		select {
+		case <-beehiveContext.Done():
+			klog.Warning("stop deletePod")
+			return
+		case msg := <-uc.podUpdateChan:
+			klog.V(5).Infof("message: %s, operation is: %s, and resource is %s", msg.GetID(), msg.GetOperation(), msg.GetResource())
+
+			namespace, err := messagelayer.GetNamespace(msg)
+			if err != nil {
+				klog.Warningf("message: %s process failure, get namespace failed with error: %v", msg.GetID(), err)
+				continue
+			}
+
+			data, err := msg.GetContentData()
+			if err != nil {
+				klog.Warningf("message: %s process failure, get msg content failed with error: %v", msg.GetID(), err)
+				continue
+			}
+			var pod v1.Pod
+			if err := json.Unmarshal(data, &pod); err != nil {
+				// 解析失败，处理错误
+				klog.Warningf("Failed to unmarshal deletion options from msg, pod namespace: %s, pod name: %s, err: %v", namespace, pod.Name, err)
+				continue
+			}
+
+			_, err = uc.kubeClient.CoreV1().Pods(namespace).Update(context.Background(), &pod, metaV1.UpdateOptions{})
+			if err != nil && !errors.IsNotFound(err) {
+				klog.Warningf("Failed to find and update pod, namespace: %s, name: %s, err: %v", namespace, pod.Name, err)
+				continue
+			}
+			klog.V(4).Infof("Successfully update pod, namespace: %s, name: %s", namespace, pod.Name)
 		}
 	}
 }

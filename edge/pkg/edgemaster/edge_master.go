@@ -4,7 +4,7 @@ import (
 	"github.com/kubeedge/beehive/pkg/core"
 	beehiveContext "github.com/kubeedge/beehive/pkg/core/context"
 	"github.com/kubeedge/kubeedge/edge/pkg/common/modules"
-	"github.com/kubeedge/kubeedge/edge/pkg/edgemaster/config"
+	emconfig "github.com/kubeedge/kubeedge/edge/pkg/edgemaster/config"
 	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/edgecore/v1alpha2"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -15,21 +15,23 @@ type EdgeMaster struct {
 	clusterConfig string
 	clusterClient kubernetes.Interface
 	enable        bool
+	nodeName      string
 }
 
 var _ core.Module = (*EdgeMaster)(nil)
 
-func newEdgeMaster(enable bool, configFile string) *EdgeMaster {
+func newEdgeMaster(enable bool, configFile string, nodeName string) *EdgeMaster {
 	return &EdgeMaster{
 		enable:        enable,
 		clusterConfig: configFile,
+		nodeName:      nodeName,
 	}
 }
 
 // Register register EdgeMaster
 func Register(em *v1alpha2.EdgeMaster, nodeName string) {
-	config.InitConfigure(em, nodeName)
-	core.Register(newEdgeMaster(em.Enable, em.ClusterConfig))
+	emconfig.InitConfigure(em, nodeName)
+	core.Register(newEdgeMaster(em.Enable, em.ClusterConfig, emconfig.Config.NodeName))
 }
 
 // Name returns the name of EdgeMaster module

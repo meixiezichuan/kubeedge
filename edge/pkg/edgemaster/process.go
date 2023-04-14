@@ -3,16 +3,15 @@ package edgemaster
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	beehiveContext "github.com/kubeedge/beehive/pkg/core/context"
 	"github.com/kubeedge/beehive/pkg/core/model"
 	"github.com/kubeedge/kubeedge/edge/pkg/common/modules"
 	"github.com/kubeedge/kubeedge/edge/pkg/common/util"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/tools/cache"
 	"time"
 
-	edgeapi "github.com/kubeedge/kubeedge/common/types"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog/v2"
@@ -70,6 +69,11 @@ func (em *EdgeMaster) processPodMsg(msg *model.Message) error {
 		pod.ResourceVersion = ""
 		_, err = em.clusterClient.CoreV1().Pods(namespace).Create(context.TODO(), &pod, metav1.CreateOptions{})
 		if err != nil {
+			// pod已经存在，可能是之前同步到云端再下发下来的
+			if errors.IsAlreadyExists(err) {
+				klog.Errorf("This pod already exists, which may be a pod issued again after synchronization: %v", msg.GetID(), err)
+				return err
+			}
 			klog.Errorf("message %s send to edge cluster with error : %v", msg.GetID(), err)
 			klog.Errorf("EdgeMaster create pod %v with error : %v", pod, msg.GetID())
 			return err
@@ -209,32 +213,36 @@ func (em *EdgeMaster) podMonitor() {
 	podInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			pod := obj.(*corev1.Pod)
-			fmt.Printf("Pod added: %s\n", pod.Name)
-			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypePod, model.InsertOperation)
+			klog.V(4).Infof("Pod added: %s\n", pod.Name)
+			resource, _ := util.BuildResourceCloud(em.nodeName, pod.Namespace, model.ResourceTypePod, string(pod.UID))
+			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), resource, model.InsertOperation)
 			info.FillBody(&pod)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
-			//逻辑没捋顺，现在只考虑PodStatus发生变化的情况
-
+			//考虑所有Pod变化情况，包括Status和其他
 			oldPod := oldObj.(*corev1.Pod)
 			newPod := newObj.(*corev1.Pod)
 
-			podStatus := edgeapi.PodStatusRequest{
-				UID:    oldPod.UID,  // Pod 的唯一标识符
-				Name:   oldPod.Name, // Pod 的名称
-				Status: newPod.Status,
-			}
-
-			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypePodStatus, model.UpdateOperation)
-			info.FillBody(&podStatus)
+			//copiedOldPod := oldPod.DeepCopy()
+			//copiedOldPod.Status.Phase = newPod.Status.Phase
+			//
+			//podStatus := edgeapi.PodStatusRequest{
+			//	UID:    oldPod.UID,  // Pod 的唯一标识符
+			//	Name:   oldPod.Name, // Pod 的名称
+			//	Status: newPod.Status,
+			//}
+			resource, _ := util.BuildResourceCloud(em.nodeName, oldPod.Namespace, model.ResourceTypePod, string(oldPod.UID))
+			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), resource, model.UpdateOperation)
+			info.FillBody(&newPod)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
 		},
 		DeleteFunc: func(obj interface{}) {
 			pod := obj.(*corev1.Pod)
-			klog.Infof("Pod deleted: %s\n", pod.Name)
-			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypePod, model.DeleteOperation)
-			info.FillBody(&pod)
+			resource, _ := util.BuildResourceCloud(em.nodeName, pod.Namespace, model.ResourceTypePod, string(pod.UID))
+			klog.V(4).Infof("Pod deleted: %s\n", pod.Name)
+			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), resource, model.DeleteOperation)
+			info.FillBody(metav1.DeleteOptions{})
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
 		},
 	})
