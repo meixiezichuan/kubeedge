@@ -18,7 +18,7 @@ import (
 )
 
 func (em *EdgeMaster) process(msg *model.Message) {
-	_, resourceType, _, err := util.ParseResourceEdge(msg.GetResource(), msg.GetOperation())
+	namespace, resourceType, _, err := util.ParseResourceEdge(msg.GetResource(), msg.GetOperation())
 	if err != nil {
 		klog.Warningf("EdgeMaster parse message: %s resource type with error, message resource: %s, err: %v", msg.GetID(), msg.GetResource(), err)
 		return
@@ -26,8 +26,13 @@ func (em *EdgeMaster) process(msg *model.Message) {
 
 	switch resourceType {
 	case model.ResourceTypePod:
-		// if resource type is pod, remove node
-		err = em.processPodMsg(msg)
+		// 如果是指定了ns的pod，不做拦截
+		if namespace != "default" && namespace != "" {
+			beehiveContext.SendToGroup(modules.MetaGroup, *msg)
+		} else {
+			// if resource type is pod, remove node
+			err = em.processPodMsg(msg)
+		}
 	case model.ResourceTypeConfigmap:
 		err = em.processConfigMapMsg(msg)
 	case model.ResourceTypeSecret:
@@ -62,7 +67,6 @@ func (em *EdgeMaster) processPodMsg(msg *model.Message) error {
 			klog.Errorf("message %s content unmarshal to pod with error : %v", msg.GetID(), err)
 			return err
 		}
-		// 清空NodeName可以理解，为什么要清空ResourceVersion？
 		// remove NodeName of pod
 		pod.Spec.NodeName = ""
 		// remove resourceVersion of pod
