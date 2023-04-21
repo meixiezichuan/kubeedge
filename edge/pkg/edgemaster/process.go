@@ -217,6 +217,7 @@ func (em *EdgeMaster) podMonitor() {
 	podInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			pod := obj.(*corev1.Pod)
+			pod.ResourceVersion = ""
 			klog.V(4).Infof("Pod added: %s\n", pod.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypePod, model.InsertOperation)
 			info.FillBody(&pod)
@@ -268,6 +269,7 @@ func (em *EdgeMaster) configMapMonitor() {
 	cmInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			cm := obj.(*corev1.ConfigMap)
+			cm.ResourceVersion = ""
 			klog.Infof("ConfigMap added: %s\n", cm.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypeConfigmap, model.InsertOperation)
 			info.FillBody(&cm)
@@ -311,6 +313,7 @@ func (em *EdgeMaster) secretMonitor() {
 	secretInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			secret := obj.(*corev1.Secret)
+			secret.ResourceVersion = ""
 			klog.Infof("Secret added: %s\n", secret.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), "default/"+model.ResourceTypeSecret, model.InsertOperation)
 			info.FillBody(&secret)
