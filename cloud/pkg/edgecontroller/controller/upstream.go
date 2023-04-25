@@ -219,6 +219,7 @@ func (uc *UpstreamController) dispatchMessage() {
 		resourceType, err := messagelayer.GetResourceType(msg)
 		if err != nil {
 			klog.Warningf("parse message: %s resource type with error, message resource: %s, err: %v", msg.GetID(), msg.GetResource(), err)
+			klog.Warningf("parse message: %s resource type with error, message operation: %s, err: %v", msg.GetID(), msg.GetOperation(), err)
 			continue
 		}
 
