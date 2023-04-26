@@ -37,8 +37,8 @@ func (em *EdgeMaster) process(msg *model.Message) {
 		err = em.processConfigMapMsg(msg)
 	case model.ResourceTypeSecret:
 		err = em.processSecretMsg(msg)
-	case model.ResourceTypeNode:
-		//TODO
+	//case model.ResourceTypeNode:
+	//TODO
 	default:
 		beehiveContext.SendToGroup(modules.MetaGroup, *msg)
 	}
