@@ -40,7 +40,7 @@ If not installed, please install the Kubernetes first.
 keadm init
 - This command will render and install the Charts for Kubeedge cloud component
 
-keadm init --advertise-address=127.0.0.1 --profile version=v1.9.0 --kube-config=/root/.kube/config
+keadm init --advertise-address=127.0.0.1 --profile version=v%s --kube-config=/root/.kube/config
   - kube-config is the absolute path of kubeconfig which used to secure connectivity between cloudcore and kube-apiserver
 	- a list of helm style set flags like "--set key=value" can be implemented, ref: https://github.com/kubeedge/kubeedge/tree/master/manifests/charts/cloudcore/README.md
 `
@@ -57,7 +57,7 @@ func NewCloudInit() *cobra.Command {
 		Use:     "init",
 		Short:   "Bootstraps cloud component. Checks and install (if required) the pre-requisites.",
 		Long:    cloudInitLongDescription,
-		Example: cloudInitExample,
+		Example: fmt.Sprintf(cloudInitExample, types.DefaultKubeEdgeVersion),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			checkFlags := func(f *pflag.Flag) {
 				util.AddToolVals(f, flagVals)
@@ -102,7 +102,7 @@ func addInitOtherFlags(cmd *cobra.Command, initOpts *types.InitOptions) {
 		"Allow appending file directories of k8s resources to keadm, separated by commas")
 
 	cmd.Flags().BoolVarP(&initOpts.DryRun, types.DryRun, "d", initOpts.DryRun,
-		"Print the generated k8s resources on the stdout, not actual excute. Always use in debug mode")
+		"Print the generated k8s resources on the stdout, not actual execute. Always use in debug mode")
 
 	cmd.Flags().StringVar(&initOpts.ExternalHelmRoot, types.ExternalHelmRoot, initOpts.ExternalHelmRoot,
 		"Add external helm root path to keadm.")
@@ -110,7 +110,7 @@ func addInitOtherFlags(cmd *cobra.Command, initOpts *types.InitOptions) {
 
 func addHelmValueOptionsFlags(cmd *cobra.Command, initOpts *types.InitOptions) {
 	cmd.Flags().StringArrayVar(&initOpts.Sets, "set", []string{}, "Set values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)")
-	cmd.Flags().StringVar(&initOpts.Profile, "profile", initOpts.Profile, "Set profile on the command line (iptablesMgrMode=external or version=v1.9.1)")
+	cmd.Flags().StringVar(&initOpts.Profile, "profile", initOpts.Profile, fmt.Sprintf("Set profile on the command line (iptablesMgrMode=external or version=v%s)", types.DefaultKubeEdgeVersion))
 }
 
 func addForceOptionsFlags(cmd *cobra.Command, initOpts *types.InitOptions) {
