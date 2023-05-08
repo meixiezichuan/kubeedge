@@ -211,7 +211,7 @@ func (em *EdgeMaster) processSecretMsg(msg *model.Message) error {
 
 func (em *EdgeMaster) podMonitor() {
 
-	sharedInformers := informers.NewSharedInformerFactoryWithOptions(em.clusterClient, time.Minute*10, informers.WithNamespace("default"))
+	sharedInformers := informers.NewSharedInformerFactory(em.clusterClient, time.Minute*10)
 
 	podInformer := sharedInformers.Core().V1().Pods().Informer()
 	podInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
@@ -263,7 +263,7 @@ func (em *EdgeMaster) podMonitor() {
 
 func (em *EdgeMaster) configMapMonitor() {
 
-	sharedInformers := informers.NewSharedInformerFactoryWithOptions(em.clusterClient, time.Minute*10, informers.WithNamespace("default"))
+	sharedInformers := informers.NewSharedInformerFactory(em.clusterClient, time.Minute*10)
 
 	cmInformer := sharedInformers.Core().V1().ConfigMaps().Informer()
 	cmInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
@@ -307,7 +307,7 @@ func (em *EdgeMaster) configMapMonitor() {
 
 func (em *EdgeMaster) secretMonitor() {
 
-	sharedInformers := informers.NewSharedInformerFactoryWithOptions(em.clusterClient, time.Minute*10, informers.WithNamespace("default"))
+	sharedInformers := informers.NewSharedInformerFactory(em.clusterClient, time.Minute*10)
 
 	secretInformer := sharedInformers.Core().V1().Secrets().Informer()
 	secretInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
