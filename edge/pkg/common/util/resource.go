@@ -27,7 +27,7 @@ func BuildResourceCloud(namespace, resourceType, resourceID string) (resource st
 		return
 	}
 
-	resource = fmt.Sprintf("%s%s%s%s", constants.ResourceSep, namespace, constants.ResourceSep, resourceType)
+	resource = fmt.Sprintf("%s%s%s", namespace, constants.ResourceSep, resourceType)
 	if resourceID != "" {
 		resource += fmt.Sprintf("%s%s", constants.ResourceSep, resourceID)
 	}
