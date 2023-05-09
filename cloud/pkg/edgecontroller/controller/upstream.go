@@ -274,6 +274,7 @@ func (uc *UpstreamController) dispatchMessage() {
 			}
 		default:
 			klog.Errorf("message: %s, resource type: %s unsupported", msg.GetID(), resourceType)
+			klog.Errorf("message: %s, resource: %s unsupported", msg.GetID(), msg.GetResource())
 		}
 	}
 }
@@ -717,7 +718,8 @@ func (uc *UpstreamController) syncConfigMap() {
 		case msg := <-uc.configMapChan:
 			switch msg.GetOperation() {
 			case model.UpdateOperation:
-				queryInner(uc, msg, model.ResourceTypeConfigmap)
+				//queryInner(uc, msg, model.ResourceTypeConfigmap)
+				klog.Warningf("Incomplete methods, syncConfigMap, Update")
 			case model.DeleteOperation:
 				namespace, err := messagelayer.GetNamespace(msg)
 				if err != nil {
@@ -779,7 +781,9 @@ func (uc *UpstreamController) syncSecret() {
 
 			switch msg.GetOperation() {
 			case model.UpdateOperation:
-				queryInner(uc, msg, model.ResourceTypeSecret)
+				//queryInner(uc, msg, model.ResourceTypeSecret)
+				klog.Warningf("Incomplete methods, syncSecret, Update")
+
 			case model.DeleteOperation:
 				namespace, err := messagelayer.GetNamespace(msg)
 				if err != nil {
@@ -1192,7 +1196,7 @@ func (uc *UpstreamController) updatePod() {
 	for {
 		select {
 		case <-beehiveContext.Done():
-			klog.Warning("stop deletePod")
+			klog.Warning("stop updatePod")
 			return
 		case msg := <-uc.podUpdateChan:
 			klog.V(5).Infof("message: %s, operation is: %s, and resource is %s", msg.GetID(), msg.GetOperation(), msg.GetResource())
