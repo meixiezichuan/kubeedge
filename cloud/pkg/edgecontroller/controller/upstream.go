@@ -1150,7 +1150,7 @@ func (uc *UpstreamController) addPod() {
 	for {
 		select {
 		case <-beehiveContext.Done():
-			klog.Warning("stop deletePod")
+			klog.Warning("stop addPod")
 			return
 		case msg := <-uc.podInsertChan:
 			klog.V(5).Infof("message: %s, operation is: %s, and resource is %s", msg.GetID(), msg.GetOperation(), msg.GetResource())

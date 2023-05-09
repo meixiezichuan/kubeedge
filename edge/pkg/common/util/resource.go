@@ -21,13 +21,13 @@ func ParseResourceEdge(resource string, operation string) (string, string, strin
 	}
 }
 
-func BuildResourceCloud(nodeName, namespace, resourceType, resourceID string) (resource string, err error) {
-	if namespace == "" || resourceType == "" || nodeName == "" {
+func BuildResourceCloud(namespace, resourceType, resourceID string) (resource string, err error) {
+	if namespace == "" || resourceType == "" {
 		err = fmt.Errorf("required parameter are not set (node id, namespace or resource type)")
 		return
 	}
 
-	resource = fmt.Sprintf("%s%s%s%s%s", nodeName, constants.ResourceSep, namespace, constants.ResourceSep, resourceType)
+	resource = fmt.Sprintf("%s%s%s%s", constants.ResourceSep, namespace, constants.ResourceSep, resourceType)
 	if resourceID != "" {
 		resource += fmt.Sprintf("%s%s", constants.ResourceSep, resourceID)
 	}

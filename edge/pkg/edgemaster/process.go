@@ -37,9 +37,10 @@ func (em *EdgeMaster) process(msg *model.Message) {
 		err = em.processConfigMapMsg(msg)
 	case model.ResourceTypeSecret:
 		err = em.processSecretMsg(msg)
-	case model.ResourceTypeNode:
-		//TODO
+	//case model.ResourceTypeNode:
+	//TODO
 	default:
+		klog.Errorf("message: %s, resource type: %s is unsupported in edgemaster", msg.GetID(), resourceType)
 		beehiveContext.SendToGroup(modules.MetaGroup, *msg)
 	}
 	if err != nil {
@@ -219,7 +220,7 @@ func (em *EdgeMaster) podMonitor() {
 			pod := obj.(*corev1.Pod)
 			pod.ResourceVersion = ""
 			klog.V(4).Infof("Pod added: %s\n", pod.Name)
-			resource, _ := util.BuildResourceCloud(em.nodeName, pod.Namespace, model.ResourceTypePod, pod.Name)
+			resource, _ := util.BuildResourceCloud(pod.Namespace, model.ResourceTypePod, pod.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), resource, model.InsertOperation)
 			info.FillBody(&pod)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
@@ -227,14 +228,14 @@ func (em *EdgeMaster) podMonitor() {
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			oldPod := oldObj.(*corev1.Pod)
 			newPod := newObj.(*corev1.Pod)
-			resource, _ := util.BuildResourceCloud(em.nodeName, oldPod.Namespace, model.ResourceTypePod, oldPod.Name)
+			resource, _ := util.BuildResourceCloud(oldPod.Namespace, model.ResourceTypePod, oldPod.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), resource, model.UpdateOperation)
 			info.FillBody(&newPod)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
 		},
 		DeleteFunc: func(obj interface{}) {
 			pod := obj.(*corev1.Pod)
-			resource, _ := util.BuildResourceCloud(em.nodeName, pod.Namespace, model.ResourceTypePod, pod.Name)
+			resource, _ := util.BuildResourceCloud(pod.Namespace, model.ResourceTypePod, pod.Name)
 			klog.V(4).Infof("Pod deleted: %s\n", pod.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), resource, model.DeleteOperation)
 			info.FillBody(metav1.DeleteOptions{})
@@ -265,7 +266,7 @@ func (em *EdgeMaster) configMapMonitor() {
 			cm := obj.(*corev1.ConfigMap)
 			cm.ResourceVersion = ""
 			klog.Infof("ConfigMap added: %s\n", cm.Name)
-			resource, _ := util.BuildResourceCloud(em.nodeName, cm.Namespace, model.ResourceTypeConfigmap, cm.Name)
+			resource, _ := util.BuildResourceCloud(cm.Namespace, model.ResourceTypeConfigmap, cm.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), resource, model.InsertOperation)
 			info.FillBody(&cm)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
@@ -274,7 +275,7 @@ func (em *EdgeMaster) configMapMonitor() {
 			oldCM := oldObj.(*corev1.ConfigMap)
 			newCM := newObj.(*corev1.ConfigMap)
 			klog.Infof("ConfigMap updated: %s -> %s\n", oldCM.Name, newCM.Name)
-			resource, _ := util.BuildResourceCloud(em.nodeName, oldCM.Namespace, model.ResourceTypeConfigmap, oldCM.Name)
+			resource, _ := util.BuildResourceCloud(oldCM.Namespace, model.ResourceTypeConfigmap, oldCM.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), resource, model.UpdateOperation)
 			info.FillBody(&newCM)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
@@ -282,7 +283,7 @@ func (em *EdgeMaster) configMapMonitor() {
 		DeleteFunc: func(obj interface{}) {
 			cm := obj.(*corev1.ConfigMap)
 			klog.Infof("ConfigMap deleted: %s\n", cm.Name)
-			resource, _ := util.BuildResourceCloud(em.nodeName, cm.Namespace, model.ResourceTypeConfigmap, cm.Name)
+			resource, _ := util.BuildResourceCloud(cm.Namespace, model.ResourceTypeConfigmap, cm.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), resource, model.DeleteOperation)
 			info.FillBody(&cm)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
@@ -312,7 +313,7 @@ func (em *EdgeMaster) secretMonitor() {
 			secret := obj.(*corev1.Secret)
 			secret.ResourceVersion = ""
 			klog.Infof("Secret added: %s\n", secret.Name)
-			resource, _ := util.BuildResourceCloud(em.nodeName, secret.Namespace, model.ResourceTypeSecret, secret.Name)
+			resource, _ := util.BuildResourceCloud(secret.Namespace, model.ResourceTypeSecret, secret.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), resource, model.InsertOperation)
 			info.FillBody(&secret)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
@@ -321,7 +322,7 @@ func (em *EdgeMaster) secretMonitor() {
 			oldSecret := oldObj.(*corev1.Secret)
 			newSecret := newObj.(*corev1.Secret)
 			klog.Infof("Secret updated: %s -> %s\n", oldSecret.Name, newSecret.Name)
-			resource, _ := util.BuildResourceCloud(em.nodeName, oldSecret.Namespace, model.ResourceTypeSecret, oldSecret.Name)
+			resource, _ := util.BuildResourceCloud(oldSecret.Namespace, model.ResourceTypeSecret, oldSecret.Name)
 
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), resource, model.UpdateOperation)
 			info.FillBody(&newSecret)
@@ -330,7 +331,7 @@ func (em *EdgeMaster) secretMonitor() {
 		DeleteFunc: func(obj interface{}) {
 			secret := obj.(*corev1.ConfigMap)
 			klog.Infof("Secret deleted: %s\n", secret.Name)
-			resource, _ := util.BuildResourceCloud(em.nodeName, secret.Namespace, model.ResourceTypeSecret, secret.Name)
+			resource, _ := util.BuildResourceCloud(secret.Namespace, model.ResourceTypeSecret, secret.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), em.Group(), resource, model.DeleteOperation)
 			info.FillBody(&secret)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
