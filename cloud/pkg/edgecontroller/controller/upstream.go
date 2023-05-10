@@ -219,6 +219,7 @@ func (uc *UpstreamController) dispatchMessage() {
 		}
 
 		klog.V(5).Infof("message: %s, operation type is: %s", msg.GetID(), msg.GetOperation())
+		klog.V(5).Infof("message: %s, resource type is: %s", msg.GetID(), resourceType)
 
 		switch resourceType {
 		case model.ResourceTypeNodeStatus:
