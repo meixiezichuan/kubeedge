@@ -224,7 +224,9 @@ func (em *EdgeMaster) podMonitor() {
 			resource, _ := util.BuildResourceCloud(pod.Namespace, model.ResourceTypePod, pod.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), message.ResourceGroupName, resource, model.InsertOperation)
 			info.FillBody(&pod)
+			klog.Infof("Ready to report event of pod added, pod name: %s", pod.Name)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
+			klog.Infof("message sent.")
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			oldPod := oldObj.(*corev1.Pod)
@@ -232,7 +234,9 @@ func (em *EdgeMaster) podMonitor() {
 			resource, _ := util.BuildResourceCloud(oldPod.Namespace, model.ResourceTypePod, oldPod.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), message.ResourceGroupName, resource, model.UpdateOperation)
 			info.FillBody(&newPod)
+			klog.Infof("Ready to report event of pod updated, pod name: %s", oldPod.Name)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
+			klog.Infof("message sent.")
 		},
 		DeleteFunc: func(obj interface{}) {
 			pod := obj.(*corev1.Pod)
@@ -240,7 +244,9 @@ func (em *EdgeMaster) podMonitor() {
 			klog.V(4).Infof("Pod deleted: %s\n", pod.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), message.ResourceGroupName, resource, model.DeleteOperation)
 			info.FillBody(metav1.DeleteOptions{})
+			klog.Infof("Ready to report event of pod deleted, pod name: %s", pod.Name)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
+			klog.Infof("message sent.")
 		},
 	})
 
@@ -270,7 +276,9 @@ func (em *EdgeMaster) configMapMonitor() {
 			resource, _ := util.BuildResourceCloud(cm.Namespace, model.ResourceTypeConfigmap, cm.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), message.ResourceGroupName, resource, model.InsertOperation)
 			info.FillBody(&cm)
+			klog.Infof("Ready to report event of cm added, cm name: %s", cm.Name)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
+
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			oldCM := oldObj.(*corev1.ConfigMap)
@@ -279,7 +287,9 @@ func (em *EdgeMaster) configMapMonitor() {
 			resource, _ := util.BuildResourceCloud(oldCM.Namespace, model.ResourceTypeConfigmap, oldCM.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), message.ResourceGroupName, resource, model.UpdateOperation)
 			info.FillBody(&newCM)
+			klog.Infof("Ready to report event of cm updated, cm name: %s", oldCM.Name)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
+			klog.Infof("message sent.")
 		},
 		DeleteFunc: func(obj interface{}) {
 			cm := obj.(*corev1.ConfigMap)
@@ -287,7 +297,9 @@ func (em *EdgeMaster) configMapMonitor() {
 			resource, _ := util.BuildResourceCloud(cm.Namespace, model.ResourceTypeConfigmap, cm.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), message.ResourceGroupName, resource, model.DeleteOperation)
 			info.FillBody(&cm)
+			klog.Infof("Ready to report event of cm deleted, cm name: %s", cm.Name)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
+			klog.Infof("message sent.")
 		},
 	})
 
@@ -317,7 +329,10 @@ func (em *EdgeMaster) secretMonitor() {
 			resource, _ := util.BuildResourceCloud(secret.Namespace, model.ResourceTypeSecret, secret.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), message.ResourceGroupName, resource, model.InsertOperation)
 			info.FillBody(&secret)
+			klog.Infof("Ready to report event of secret added, secret name: %s", secret.Name)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
+			klog.Infof("message sent.")
+
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			oldSecret := oldObj.(*corev1.Secret)
@@ -327,7 +342,9 @@ func (em *EdgeMaster) secretMonitor() {
 
 			info := model.NewMessage("").BuildRouter(em.Name(), message.ResourceGroupName, resource, model.UpdateOperation)
 			info.FillBody(&newSecret)
+			klog.Infof("Ready to report event of secret updated, secret name: %s", oldSecret.Name)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
+			klog.Infof("message sent.")
 		},
 		DeleteFunc: func(obj interface{}) {
 			secret := obj.(*corev1.ConfigMap)
@@ -335,7 +352,9 @@ func (em *EdgeMaster) secretMonitor() {
 			resource, _ := util.BuildResourceCloud(secret.Namespace, model.ResourceTypeSecret, secret.Name)
 			info := model.NewMessage("").BuildRouter(em.Name(), message.ResourceGroupName, resource, model.DeleteOperation)
 			info.FillBody(&secret)
+			klog.Infof("Ready to report event of secret deleted, secret name: %s", secret.Name)
 			beehiveContext.SendToGroup(modules.HubGroup, *info)
+			klog.Infof("message sent.")
 		},
 	})
 
