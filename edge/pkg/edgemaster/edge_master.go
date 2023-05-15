@@ -82,7 +82,7 @@ func (em *EdgeMaster) Start() {
 	}()
 
 	//监控资源状态并上报
-	go em.podMonitor()
-	go em.configMapMonitor()
-	go em.secretMonitor()
+	//go em.podMonitor()
+	//go em.configMapMonitor()
+	//go em.secretMonitor()
 }
