@@ -23,7 +23,7 @@ func ParseResourceEdge(resource string, operation string) (string, string, strin
 
 func BuildResourceCloud(namespace, resourceType, resourceID string) (resource string, err error) {
 	if namespace == "" || resourceType == "" {
-		err = fmt.Errorf("required parameter are not set (node id, namespace or resource type)")
+		err = fmt.Errorf("required parameter are not set (namespace or resource type)")
 		return
 	}
 
