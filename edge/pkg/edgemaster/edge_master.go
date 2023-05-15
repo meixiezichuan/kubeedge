@@ -9,6 +9,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/klog/v2"
+	"time"
 )
 
 type EdgeMaster struct {
@@ -82,6 +83,8 @@ func (em *EdgeMaster) Start() {
 	}()
 
 	klog.Infof("Start monitoring changes in edge cluster resources")
+
+	time.Sleep(10 * time.Second)
 	//监控资源状态并上报
 	go em.podMonitor()
 	go em.configMapMonitor()
