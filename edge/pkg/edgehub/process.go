@@ -74,6 +74,8 @@ func (*defaultHandler) Process(message *model.Message, clientHub clients.Adapter
 		md = modules.BusGroup
 	}
 
+	klog.Infof("EdgeHub dispatching meesage, md: %s", md)
+
 	isResponse := isSyncResponse(message.GetParentID())
 	if isResponse {
 		beehiveContext.SendResp(*message)
@@ -85,6 +87,7 @@ func (*defaultHandler) Process(message *model.Message, clientHub clients.Adapter
 		beehiveContext.Send(modules.ServiceBusModuleName, *message)
 	} else {
 		beehiveContext.SendToGroup(md, *message)
+		klog.Infof("EdgeHub dispatching meesage, sendToGroup: %s", md)
 	}
 	return nil
 }
