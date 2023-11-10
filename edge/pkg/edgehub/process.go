@@ -3,6 +3,7 @@ package edgehub
 import (
 	"context"
 	"fmt"
+	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/edgecore/v1alpha2"
 	"time"
 
 	"k8s.io/klog/v2"
@@ -64,7 +65,11 @@ func (*defaultHandler) Process(message *model.Message, clientHub clients.Adapter
 	md := ""
 	switch group {
 	case messagepkg.ResourceGroupName:
-		md = modules.MetaGroup
+		if v1alpha2.IsEdgeMaster {
+			md = modules.MasterGroup
+		} else {
+			md = modules.MetaGroup
+		}
 	case messagepkg.TwinGroupName:
 		md = modules.TwinGroup
 	case messagepkg.FuncGroupName:

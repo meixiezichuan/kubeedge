@@ -22,6 +22,7 @@ import (
 	"github.com/kubeedge/kubeedge/edge/pkg/edged"
 	"github.com/kubeedge/kubeedge/edge/pkg/edgehub"
 	"github.com/kubeedge/kubeedge/edge/pkg/edgehub/certificate"
+	"github.com/kubeedge/kubeedge/edge/pkg/edgemaster"
 	"github.com/kubeedge/kubeedge/edge/pkg/edgestream"
 	"github.com/kubeedge/kubeedge/edge/pkg/eventbus"
 	"github.com/kubeedge/kubeedge/edge/pkg/metamanager"
@@ -126,7 +127,13 @@ offering HTTP client capabilities to components of cloud to reach HTTP servers r
 				klog.Infof("Get IP address by custom interface successfully, %s: %s", config.Modules.Edged.CustomInterfaceName, config.Modules.Edged.NodeIP)
 			}
 
-			registerModules(config)
+			if config.IsEdgeMaster {
+				v1alpha2.IsEdgeMaster = true
+				registerEdgeMasterModules(config)
+			} else {
+				registerModules(config)
+			}
+
 			// start all modules
 			core.Run()
 		},
@@ -188,6 +195,15 @@ func environmentCheck() error {
 	}
 
 	return nil
+}
+
+// registerEdgeMasterModules register modules required by edge master
+func registerEdgeMasterModules(c *v1alpha2.EdgeCoreConfig) {
+	edged.Register(c.Modules.Edged)
+	edgehub.Register(c.Modules.EdgeHub, c.Modules.Edged.HostnameOverride)
+	metamanager.Register(c.Modules.MetaManager)
+	edgestream.Register(c.Modules.EdgeStream, c.Modules.Edged.HostnameOverride, c.Modules.Edged.NodeIP)
+	edgemaster.Register(c.Modules.EdgeMaster, c.Modules.Edged.HostnameOverride)
 }
 
 // registerModules register all the modules started in edgecore

@@ -42,6 +42,9 @@ const (
 type ProtocolName string
 type MqttMode int
 
+// IsEdgeMaster
+var IsEdgeMaster = false
+
 // EdgeCoreConfig indicates the EdgeCore config which read from EdgeCore config file
 type EdgeCoreConfig struct {
 	metav1.TypeMeta
@@ -53,6 +56,9 @@ type EdgeCoreConfig struct {
 	Modules *Modules `json:"modules,omitempty"`
 	// FeatureGates is a map of feature names to bools that enable or disable alpha/experimental features.
 	FeatureGates map[string]bool `json:"featureGates,omitempty"`
+	// IsEdgeMaster indicates node as the master of edge cluster
+	// default false
+	IsEdgeMaster bool `json:"IsEdgeMaster,omitempty"`
 }
 
 // DataBase indicates the database info
@@ -91,6 +97,8 @@ type Modules struct {
 	// EdgeStream indicates edgestream module config
 	// +Required
 	EdgeStream *EdgeStream `json:"edgeStream,omitempty"`
+	// EdgeMaster indicates edgemaster module config
+	EdgeMaster *EdgeMaster `json:"edgeMaster,omitempty"`
 }
 
 // Edged indicates the config fo edged module
@@ -1021,4 +1029,15 @@ type EdgeStream struct {
 	// WriteDeadline indicates write deadline (second)
 	// default 15
 	WriteDeadline int32 `json:"writeDeadline,omitempty"`
+}
+
+type EdgeMaster struct {
+	// Enable indicates whether edgeMaster is enabled, if set to false (for debugging etc.), skip checking other configs.
+	// default false
+	Enable bool `json:"enable"`
+	// Cluster config indicates the directory of kubeConfig file for edge cluster
+	ClusterConfig string `json:"clusterConfig"`
+	// HandshakeTimeout indicates handshake timeout (second)
+	// default 30
+	HandshakeTimeout int32 `json:"handshakeTimeout,omitempty"`
 }
