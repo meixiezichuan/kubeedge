@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kubeedge/kubeedge/edge/pkg/edgehub/clients/quicclient"
-	"github.com/kubeedge/kubeedge/edge/pkg/edgehub/clients/wsclient"
-	"github.com/kubeedge/kubeedge/edge/pkg/edgehub/config"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/edgehub/clients/quicclient"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/edgehub/clients/wsclient"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/edgehub/config"
 )
 
 // GetClient returns an Adapter object with new web socket
