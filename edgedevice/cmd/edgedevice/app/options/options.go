@@ -44,6 +44,15 @@ const (
 	Kind       = "EdgeDevice"
 )
 
+const (
+	// DataBaseDriverName is sqlite3
+	DataBaseDriverName = "sqlite3"
+	// DataBaseAliasName is default
+	DataBaseAliasName = "default"
+	// DataSource
+	DataBaseDataSource = "/var/lib/kubeedge/edgedevice.db"
+)
+
 var edgeDeviceOptions *EdgeDeviceOptions
 var edgeDeviceConfig *EdgeDeviceConfig
 
@@ -95,6 +104,11 @@ func NewDefaultEdgeDeviceConfig() (config *EdgeDeviceConfig) {
 		TypeMeta: metav1.TypeMeta{
 			Kind:       Kind,
 			APIVersion: path.Join(GroupName, APIVersion),
+		},
+		DataBase: &DataBase{
+			DriverName: DataBaseDriverName,
+			AliasName:  DataBaseAliasName,
+			DataSource: DataBaseDataSource,
 		},
 		Modules: &v1alpha2.Modules{
 			EdgeHub: &v1alpha2.EdgeHub{

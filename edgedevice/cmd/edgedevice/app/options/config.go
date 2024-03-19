@@ -8,9 +8,25 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+// DataBase indicates the database info
+type DataBase struct {
+	// DriverName indicates database driver name
+	// default "sqlite3"
+	DriverName string `json:"driverName,omitempty"`
+	// AliasName indicates alias name
+	// default "default"
+	AliasName string `json:"aliasName,omitempty"`
+	// DataSource indicates the data source path
+	// default "/var/lib/kubeedge/edgedevice.db"
+	DataSource string `json:"dataSource,omitempty"`
+}
+
 // EdgeDeviceConfig indicates the EdgeCore config which read from EdgeCore config file
 type EdgeDeviceConfig struct {
 	metav1.TypeMeta
+	// DataBase indicates database info
+	// +Required
+	DataBase *DataBase `json:"database,omitempty"`
 	// Modules indicates EdgeCore modules config
 	// +Required
 	Modules *v1alpha2.Modules `json:"modules,omitempty"`

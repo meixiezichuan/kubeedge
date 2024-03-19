@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/common/dbm"
 	"os"
 
 	"github.com/kubeedge/beehive/pkg/core"
@@ -96,4 +97,7 @@ func registerModules(c *options.EdgeDeviceConfig) {
 	devicetwin.Register(c.Modules.DeviceTwin, hostnameOverride)
 	edgehub.Register(c.Modules.EdgeHub, hostnameOverride)
 	eventbus.Register(c.Modules.EventBus, hostnameOverride)
+
+	// database
+	dbm.InitDBConfig(c.DataBase.DriverName, c.DataBase.AliasName, c.DataBase.DataSource)
 }
