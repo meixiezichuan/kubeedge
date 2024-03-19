@@ -1,4 +1,4 @@
-package app
+package options
 
 import (
 	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/edgecore/v1alpha2"

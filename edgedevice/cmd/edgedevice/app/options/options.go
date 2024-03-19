@@ -28,7 +28,6 @@ import (
 	"path"
 
 	"github.com/kubeedge/kubeedge/common/constants"
-	"github.com/kubeedge/kubeedge/edgedevice/cmd/edgedevice/app"
 	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/edgecore/v1alpha2"
 	"github.com/kubeedge/kubeedge/pkg/util/validation"
 )
@@ -46,13 +45,13 @@ const (
 )
 
 var edgeDeviceOptions *EdgeDeviceOptions
-var edgeDeviceConfig *app.EdgeDeviceConfig
+var edgeDeviceConfig *EdgeDeviceConfig
 
 func GetEdgeCoreOptions() *EdgeDeviceOptions {
 	return edgeDeviceOptions
 }
 
-func GetEdgeCoreConfig() *app.EdgeDeviceConfig {
+func GetEdgeCoreConfig() *EdgeDeviceConfig {
 	return edgeDeviceConfig
 }
 
@@ -78,7 +77,7 @@ func (o *EdgeDeviceOptions) Validate() []error {
 	return errs
 }
 
-func (o *EdgeDeviceOptions) Config() (*app.EdgeDeviceConfig, error) {
+func (o *EdgeDeviceOptions) Config() (*EdgeDeviceConfig, error) {
 	edgeDeviceConfig = NewDefaultEdgeDeviceConfig()
 	if err := edgeDeviceConfig.Parse(o.ConfigFile); err != nil {
 		return nil, err
@@ -88,11 +87,11 @@ func (o *EdgeDeviceOptions) Config() (*app.EdgeDeviceConfig, error) {
 }
 
 // NewDefaultEdgeCoreConfig returns a full EdgeCoreConfig object
-func NewDefaultEdgeDeviceConfig() (config *app.EdgeDeviceConfig) {
+func NewDefaultEdgeDeviceConfig() (config *EdgeDeviceConfig) {
 	hostnameOverride := util.GetHostname()
 	localIP, _ := util.GetLocalIP(hostnameOverride)
 
-	config = &app.EdgeDeviceConfig{
+	config = &EdgeDeviceConfig{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       Kind,
 			APIVersion: path.Join(GroupName, APIVersion),
