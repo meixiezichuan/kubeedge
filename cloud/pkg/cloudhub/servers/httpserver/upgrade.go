@@ -37,7 +37,7 @@ const (
 	UpgradeFailedRollbackFailed  = "upgrade_failed_rollback_failed"
 )
 
-// upgradeEdge upgrade the edgecore version
+// upgradeEdge upgrade the edgedevice version
 func upgradeEdge(request *restful.Request, response *restful.Response) {
 	resp := commontypes.NodeUpgradeJobResponse{}
 

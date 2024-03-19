@@ -65,7 +65,7 @@ func FilterVersion(version string, expected string) bool {
 	// if not correct version format, also return true
 	strs := strings.Split(version, "-")
 	if len(strs) < 3 {
-		klog.Warningf("version format should be {k8s version}-kubeedge-{edgecore version}, but got : %s", version)
+		klog.Warningf("version format should be {k8s version}-kubeedge-{edgedevice version}, but got : %s", version)
 		return true
 	}
 

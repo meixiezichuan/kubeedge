@@ -131,61 +131,61 @@ func (uc *UpstreamController) Start() error {
 	klog.Info("start upstream controller")
 
 	go uc.dispatchMessage()
-
-	for i := 0; i < int(uc.config.Load.UpdateNodeStatusWorkers); i++ {
-		go uc.updateNodeStatus()
-	}
-	for i := 0; i < int(uc.config.Load.UpdatePodStatusWorkers); i++ {
-		go uc.updatePodStatus()
-	}
-	for i := 0; i < int(uc.config.Load.QueryConfigMapWorkers); i++ {
-		go uc.queryConfigMap()
-	}
-	for i := 0; i < int(uc.config.Load.QuerySecretWorkers); i++ {
-		go uc.querySecret()
-	}
-	for i := 0; i < int(uc.config.Load.ServiceAccountTokenWorkers); i++ {
-		go uc.processServiceAccountToken()
-	}
-	for i := 0; i < int(uc.config.Load.QueryPersistentVolumeWorkers); i++ {
-		go uc.queryPersistentVolume()
-	}
-	for i := 0; i < int(uc.config.Load.QueryPersistentVolumeClaimWorkers); i++ {
-		go uc.queryPersistentVolumeClaim()
-	}
-	for i := 0; i < int(uc.config.Load.QueryVolumeAttachmentWorkers); i++ {
-		go uc.queryVolumeAttachment()
-	}
-	for i := 0; i < int(uc.config.Load.CreateNodeWorkers); i++ {
-		go uc.registerNode()
-	}
-	for i := 0; i < int(uc.config.Load.PatchNodeWorkers); i++ {
-		go uc.patchNode()
-	}
-	for i := 0; i < int(uc.config.Load.QueryNodeWorkers); i++ {
-		go uc.queryNode()
-	}
-	for i := 0; i < int(uc.config.Load.UpdateNodeWorkers); i++ {
-		go uc.updateNode()
-	}
-	for i := 0; i < int(uc.config.Load.PatchPodWorkers); i++ {
-		go uc.patchPod()
-	}
-	for i := 0; i < int(uc.config.Load.DeletePodWorkers); i++ {
-		go uc.deletePod()
-	}
-	for i := 0; i < int(uc.config.Load.CreateLeaseWorkers); i++ {
-		go uc.createOrUpdateLease()
-	}
-	for i := 0; i < int(uc.config.Load.QueryLeaseWorkers); i++ {
-		go uc.queryLease()
-	}
-	for i := 0; i < int(uc.config.Load.UpdateRuleStatusWorkers); i++ {
-		go uc.updateRuleStatus()
-	}
-	for i := 0; i < int(uc.config.Load.CreatePodWorks); i++ {
-		go uc.createPod()
-	}
+	//
+	//for i := 0; i < int(uc.config.Load.UpdateNodeStatusWorkers); i++ {
+	//	go uc.updateNodeStatus()
+	//}
+	//for i := 0; i < int(uc.config.Load.UpdatePodStatusWorkers); i++ {
+	//	go uc.updatePodStatus()
+	//}
+	//for i := 0; i < int(uc.config.Load.QueryConfigMapWorkers); i++ {
+	//	go uc.queryConfigMap()
+	//}
+	//for i := 0; i < int(uc.config.Load.QuerySecretWorkers); i++ {
+	//	go uc.querySecret()
+	//}
+	//for i := 0; i < int(uc.config.Load.ServiceAccountTokenWorkers); i++ {
+	//	go uc.processServiceAccountToken()
+	//}
+	//for i := 0; i < int(uc.config.Load.QueryPersistentVolumeWorkers); i++ {
+	//	go uc.queryPersistentVolume()
+	//}
+	//for i := 0; i < int(uc.config.Load.QueryPersistentVolumeClaimWorkers); i++ {
+	//	go uc.queryPersistentVolumeClaim()
+	//}
+	//for i := 0; i < int(uc.config.Load.QueryVolumeAttachmentWorkers); i++ {
+	//	go uc.queryVolumeAttachment()
+	//}
+	//for i := 0; i < int(uc.config.Load.CreateNodeWorkers); i++ {
+	//	go uc.registerNode()
+	//}
+	//for i := 0; i < int(uc.config.Load.PatchNodeWorkers); i++ {
+	//	go uc.patchNode()
+	//}
+	//for i := 0; i < int(uc.config.Load.QueryNodeWorkers); i++ {
+	//	go uc.queryNode()
+	//}
+	//for i := 0; i < int(uc.config.Load.UpdateNodeWorkers); i++ {
+	//	go uc.updateNode()
+	//}
+	//for i := 0; i < int(uc.config.Load.PatchPodWorkers); i++ {
+	//	go uc.patchPod()
+	//}
+	//for i := 0; i < int(uc.config.Load.DeletePodWorkers); i++ {
+	//	go uc.deletePod()
+	//}
+	//for i := 0; i < int(uc.config.Load.CreateLeaseWorkers); i++ {
+	//	go uc.createOrUpdateLease()
+	//}
+	//for i := 0; i < int(uc.config.Load.QueryLeaseWorkers); i++ {
+	//	go uc.queryLease()
+	//}
+	//for i := 0; i < int(uc.config.Load.UpdateRuleStatusWorkers); i++ {
+	//	go uc.updateRuleStatus()
+	//}
+	//for i := 0; i < int(uc.config.Load.CreatePodWorks); i++ {
+	//	go uc.createPod()
+	//}
 	return nil
 }
 

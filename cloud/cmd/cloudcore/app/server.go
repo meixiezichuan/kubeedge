@@ -39,19 +39,12 @@ import (
 	"github.com/kubeedge/kubeedge/cloud/cmd/cloudcore/app/options"
 	"github.com/kubeedge/kubeedge/cloud/pkg/cloudhub"
 	"github.com/kubeedge/kubeedge/cloud/pkg/cloudhub/servers/httpserver"
-	"github.com/kubeedge/kubeedge/cloud/pkg/cloudstream"
 	"github.com/kubeedge/kubeedge/cloud/pkg/cloudstream/iptables"
 	"github.com/kubeedge/kubeedge/cloud/pkg/common/client"
 	"github.com/kubeedge/kubeedge/cloud/pkg/common/informers"
 	"github.com/kubeedge/kubeedge/cloud/pkg/common/modules"
 	"github.com/kubeedge/kubeedge/cloud/pkg/common/monitor"
 	"github.com/kubeedge/kubeedge/cloud/pkg/devicecontroller"
-	"github.com/kubeedge/kubeedge/cloud/pkg/dynamiccontroller"
-	"github.com/kubeedge/kubeedge/cloud/pkg/edgecontroller"
-	"github.com/kubeedge/kubeedge/cloud/pkg/policycontroller"
-	"github.com/kubeedge/kubeedge/cloud/pkg/router"
-	"github.com/kubeedge/kubeedge/cloud/pkg/synccontroller"
-	"github.com/kubeedge/kubeedge/cloud/pkg/taskmanager"
 	"github.com/kubeedge/kubeedge/common/constants"
 	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/cloudcore/v1alpha1"
 	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/cloudcore/v1alpha1/validation"
@@ -156,14 +149,14 @@ kubernetes controller which manages devices so that the device metadata/status d
 // registerModules register all the modules started in cloudcore
 func registerModules(c *v1alpha1.CloudCoreConfig) {
 	cloudhub.Register(c.Modules.CloudHub)
-	edgecontroller.Register(c.Modules.EdgeController)
+	//edgecontroller.Register(c.Modules.EdgeController)
 	devicecontroller.Register(c.Modules.DeviceController)
-	taskmanager.Register(c.Modules.TaskManager)
-	synccontroller.Register(c.Modules.SyncController)
-	cloudstream.Register(c.Modules.CloudStream, c.CommonConfig)
-	router.Register(c.Modules.Router)
-	dynamiccontroller.Register(c.Modules.DynamicController)
-	policycontroller.Register(client.CrdConfig)
+	//taskmanager.Register(c.Modules.TaskManager)
+	//synccontroller.Register(c.Modules.SyncController)
+	//cloudstream.Register(c.Modules.CloudStream, c.CommonConfig)
+	//router.Register(c.Modules.Router)
+	//dynamiccontroller.Register(c.Modules.DynamicController)
+	//policycontroller.Register(client.CrdConfig)
 }
 
 func NegotiateTunnelPort() (*int, error) {

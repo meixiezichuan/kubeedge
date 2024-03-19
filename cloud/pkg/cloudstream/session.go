@@ -27,19 +27,19 @@ import (
 	"github.com/kubeedge/kubeedge/pkg/stream"
 )
 
-// Session indicates one tunnel connection (default websocket) from edgecore
-// And multiple kube-apiserver initiated requests to this edgecore
+// Session indicates one tunnel connection (default websocket) from edgedevice
+// And multiple kube-apiserver initiated requests to this edgedevice
 type Session struct {
 	// sessionID indicates the unique id of session
 	sessionID string
 
-	// tunnel indicates  a tunnel connection between edgecore and cloudcore
+	// tunnel indicates  a tunnel connection between edgedevice and cloudcore
 	// default is websocket
 	tunnel stream.SafeWriteTunneler
 	// tunnelClosed indicates whether tunnel closed
 	tunnelClosed bool
 
-	// apiServerConn indicates a connection request made by multiple apiserver to one edgecore
+	// apiServerConn indicates a connection request made by multiple apiserver to one edgedevice
 	apiServerConn map[uint64]APIServerConnection
 	apiConnlock   *sync.RWMutex
 }

@@ -1,0 +1,55 @@
+package devicetwin
+
+import (
+	"github.com/kubeedge/beehive/pkg/core"
+	"github.com/kubeedge/kubeedge/edge/pkg/common/modules"
+	deviceconfig "github.com/kubeedge/kubeedge/edge/pkg/devicetwin/config"
+	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcontext"
+	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtmodule"
+	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/edgecore/v1alpha2"
+)
+
+// DeviceTwin the module
+type DeviceTwin struct {
+	HeartBeatToModule map[string]chan interface{}
+	DTContexts        *dtcontext.DTContext
+	DTModules         map[string]dtmodule.DTModule
+	enable            bool
+}
+
+var _ core.Module = (*DeviceTwin)(nil)
+
+func newDeviceTwin(enable bool) *DeviceTwin {
+	return &DeviceTwin{
+		HeartBeatToModule: make(map[string]chan interface{}),
+		DTModules:         make(map[string]dtmodule.DTModule),
+		enable:            enable,
+	}
+}
+
+// Register register devicetwin
+func Register(deviceTwin *v1alpha2.DeviceTwin, nodeName string) {
+	deviceconfig.InitConfigure(deviceTwin, nodeName)
+	dt := newDeviceTwin(deviceTwin.Enable)
+	core.Register(dt)
+}
+
+// Name get name of the module
+func (dt *DeviceTwin) Name() string {
+	return modules.DeviceTwinModuleName
+}
+
+// Group get group of the module
+func (dt *DeviceTwin) Group() string {
+	return modules.TwinGroup
+}
+
+// Enable indicates whether this module is enabled
+func (dt *DeviceTwin) Enable() bool {
+	return dt.enable
+}
+
+// Start run the module
+func (dt *DeviceTwin) Start() {
+	dt.runDeviceTwin()
+}
