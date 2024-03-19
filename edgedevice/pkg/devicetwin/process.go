@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtclient"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcontext"
 	"strings"
+	"sync"
 	"time"
 
 	"k8s.io/klog/v2"
@@ -207,6 +210,77 @@ func classifyMsg(message *dttype.DTMessage) bool {
 		return true
 	}
 	return false
+}
+
+// SyncSqlite sync sqlite
+func SyncSqlite(context *dtcontext.DTContext) error {
+	klog.Info("Begin to sync sqlite ")
+	rows, queryErr := dtclient.QueryDeviceAll()
+	if queryErr != nil {
+		klog.Errorf("Query sqlite failed while syncing sqlite, err: %#v", queryErr)
+		return queryErr
+	}
+	if rows == nil {
+		klog.Info("Query sqlite nil while syncing sqlite")
+		return nil
+	}
+	for _, device := range *rows {
+		err := SyncDeviceFromSqlite(context, device.ID)
+		if err != nil {
+			continue
+		}
+	}
+	return nil
+}
+
+// SyncDeviceFromSqlite sync device from sqlite
+func SyncDeviceFromSqlite(context *dtcontext.DTContext, deviceID string) error {
+	klog.Infof("Sync device detail info from DB of device %s", deviceID)
+	_, exist := context.GetDevice(deviceID)
+	if !exist {
+		var deviceMutex sync.Mutex
+		context.DeviceMutex.Store(deviceID, &deviceMutex)
+	}
+
+	defer context.Unlock(deviceID)
+	context.Lock(deviceID)
+
+	devices, err := dtclient.QueryDevice("id", deviceID)
+	if err != nil {
+		klog.Errorf("query device failed: %v", err)
+		return err
+	}
+	if len(*devices) <= 0 {
+		return errors.New("Not found device from db")
+	}
+	device := (*devices)[0]
+
+	deviceAttr, err := dtclient.QueryDeviceAttr("deviceid", deviceID)
+	if err != nil {
+		klog.Errorf("query device attr failed: %v", err)
+		return err
+	}
+	attributes := make([]dtclient.DeviceAttr, 0)
+	attributes = append(attributes, *deviceAttr...)
+
+	deviceTwin, err := dtclient.QueryDeviceTwin("deviceid", deviceID)
+	if err != nil {
+		klog.Errorf("query device twin failed: %v", err)
+		return err
+	}
+	twins := make([]dtclient.DeviceTwin, 0)
+	twins = append(twins, *deviceTwin...)
+
+	context.DeviceList.Store(deviceID, &dttype.Device{
+		ID:          deviceID,
+		Name:        device.Name,
+		Description: device.Description,
+		State:       device.State,
+		LastOnline:  device.LastOnline,
+		Attributes:  dttype.DeviceAttrToMsgAttr(attributes),
+		Twin:        dttype.DeviceTwinToMsgTwin(twins)})
+
+	return nil
 }
 
 func (dt *DeviceTwin) runDeviceTwin() {

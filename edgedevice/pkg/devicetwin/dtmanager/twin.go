@@ -187,7 +187,7 @@ func DealDeviceTwin(context *dtcontext.DTContext, deviceID string, eventID strin
 
 	add, deletes, update := dealTwinResult.Add, dealTwinResult.Delete, dealTwinResult.Update
 	if dealType == RestDealType && dealTwinResult.Err != nil {
-		SyncDeviceFromSqlite(context, deviceID)
+		//SyncDeviceFromSqlite(context, deviceID)
 		err = dealTwinResult.Err
 		updateResult, _ := dttype.BuildDeviceTwinResult(dttype.BaseMessage{EventID: eventID, Timestamp: now}, dealTwinResult.Result, 0)
 		dealUpdateResult(context, deviceID, eventID, dtcommon.BadRequestCode, err, updateResult)
@@ -202,7 +202,7 @@ func DealDeviceTwin(context *dtcontext.DTContext, deviceID string, eventID strin
 			time.Sleep(dtcommon.RetryInterval)
 		}
 		if err != nil {
-			SyncDeviceFromSqlite(context, deviceID)
+			//SyncDeviceFromSqlite(context, deviceID)
 			klog.Errorf("Update device twin failed due to writing sql error: %v", err)
 		}
 	}

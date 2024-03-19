@@ -53,5 +53,10 @@ func (dt *DeviceTwin) Enable() bool {
 func (dt *DeviceTwin) Start() {
 	dtContexts, _ := dtcontext.InitDTContext()
 	dt.DTContexts = dtContexts
+	//err := SyncSqlite(dt.DTContexts)
+	//if err != nil {
+	//	klog.Errorf("Start DeviceTwin Failed, Sync Sqlite error:%v", err)
+	//	return
+	//}
 	dt.runDeviceTwin()
 }
