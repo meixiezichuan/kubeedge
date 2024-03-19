@@ -51,5 +51,7 @@ func (dt *DeviceTwin) Enable() bool {
 
 // Start run the module
 func (dt *DeviceTwin) Start() {
+	dtContexts, _ := dtcontext.InitDTContext()
+	dt.DTContexts = dtContexts
 	dt.runDeviceTwin()
 }
