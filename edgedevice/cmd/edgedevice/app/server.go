@@ -91,8 +91,9 @@ func NewEdgeDeviceCommand() *cobra.Command {
 
 // registerModules register all the modules started in edgedevice
 func registerModules(c *options.EdgeDeviceConfig) {
-	devicetwin.Register(c.Modules.DeviceTwin, c.Modules.Edged.HostnameOverride)
+	hostnameOverride := util.GetHostname()
 
-	edgehub.Register(c.Modules.EdgeHub, c.Modules.Edged.HostnameOverride)
-	eventbus.Register(c.Modules.EventBus, c.Modules.Edged.HostnameOverride)
+	devicetwin.Register(c.Modules.DeviceTwin, hostnameOverride)
+	edgehub.Register(c.Modules.EdgeHub, hostnameOverride)
+	eventbus.Register(c.Modules.EventBus, hostnameOverride)
 }
