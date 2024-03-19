@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/kubeedge/beehive/pkg/core/model"
-	"github.com/kubeedge/kubeedge/edge/pkg/edgehub/clients"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/edgehub/clients"
 )
 
 // Handler handler different messages

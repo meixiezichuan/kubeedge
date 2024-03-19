@@ -34,13 +34,11 @@ import (
 	beehiveModel "github.com/kubeedge/beehive/pkg/core/model"
 	deviceconst "github.com/kubeedge/kubeedge/cloud/pkg/devicecontroller/constants"
 	"github.com/kubeedge/kubeedge/cloud/pkg/devicecontroller/types"
-	"github.com/kubeedge/kubeedge/common/constants"
-	messagepkg "github.com/kubeedge/kubeedge/edge/pkg/common/message"
-	"github.com/kubeedge/kubeedge/edge/pkg/common/modules"
-	deviceconfig "github.com/kubeedge/kubeedge/edge/pkg/devicetwin/config"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dmiclient"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcommon"
-	"github.com/kubeedge/kubeedge/edge/pkg/metamanager/dao"
+	messagepkg "github.com/kubeedge/kubeedge/edgedevice/pkg/common/message"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/common/modules"
+	deviceconfig "github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/config"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dmiclient"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcommon"
 	"github.com/kubeedge/kubeedge/pkg/apis/devices/v1beta1"
 	pb "github.com/kubeedge/kubeedge/pkg/apis/dmi/v1beta1"
 	"github.com/kubeedge/kubeedge/pkg/util"
@@ -77,11 +75,11 @@ func (s *server) MapperRegister(ctx context.Context, in *pb.MapperRegisterReques
 	}
 
 	klog.V(4).Infof("receive mapper register: %+v", in.Mapper)
-	err := saveMapper(in.Mapper)
-	if err != nil {
-		klog.Errorf("fail to save mapper %s to db with err: %v", in.Mapper.Name, err)
-		return nil, err
-	}
+	//err := saveMapper(in.Mapper)
+	//if err != nil {
+	//	klog.Errorf("fail to save mapper %s to db with err: %v", in.Mapper.Name, err)
+	//	return nil, err
+	//}
 	s.dmiCache.MapperMu.Lock()
 	s.dmiCache.MapperList[in.Mapper.Name] = in.Mapper
 	s.dmiCache.MapperMu.Unlock()
@@ -210,23 +208,23 @@ func StartDMIServer(cache *DMICache) {
 	klog.Infoln("success to start DMI Server")
 }
 
-func saveMapper(mapper *pb.MapperInfo) error {
-	content, err := json.Marshal(mapper)
-	if err != nil {
-		klog.Errorf("marshal mapper info failed, %s: %v", mapper.Name, err)
-		return err
-	}
-	resource := fmt.Sprintf("%s%s%s%s%s%s%s%s%s", "node", constants.ResourceSep, "nodeID",
-		constants.ResourceSep, "namespace", constants.ResourceSep, deviceconst.ResourceTypeDeviceMapper, constants.ResourceSep, mapper.Name)
-	meta := &dao.Meta{
-		Key:   resource,
-		Type:  deviceconst.ResourceTypeDeviceMapper,
-		Value: string(content)}
-	err = dao.SaveMeta(meta)
-	if err != nil {
-		klog.Errorf("save meta failed, %s: %v", mapper.Name, err)
-		return err
-	}
-	klog.Infof("success to save mapper info of %s to db", mapper.Name)
-	return nil
-}
+//func saveMapper(mapper *pb.MapperInfo) error {
+//	content, err := json.Marshal(mapper)
+//	if err != nil {
+//		klog.Errorf("marshal mapper info failed, %s: %v", mapper.Name, err)
+//		return err
+//	}
+//	resource := fmt.Sprintf("%s%s%s%s%s%s%s%s%s", "node", constants.ResourceSep, "nodeID",
+//		constants.ResourceSep, "namespace", constants.ResourceSep, deviceconst.ResourceTypeDeviceMapper, constants.ResourceSep, mapper.Name)
+//	meta := &dao.Meta{
+//		Key:   resource,
+//		Type:  deviceconst.ResourceTypeDeviceMapper,
+//		Value: string(content)}
+//	err = dao.SaveMeta(meta)
+//	if err != nil {
+//		klog.Errorf("save meta failed, %s: %v", mapper.Name, err)
+//		return err
+//	}
+//	klog.Infof("success to save mapper info of %s to db", mapper.Name)
+//	return nil
+//}

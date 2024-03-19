@@ -29,10 +29,10 @@ import (
 	"k8s.io/klog/v2"
 
 	"github.com/kubeedge/beehive/pkg/core/model"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtclient"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcommon"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcontext"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dttype"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtclient"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcommon"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcontext"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dttype"
 	"github.com/kubeedge/kubeedge/pkg/testtools"
 )
 

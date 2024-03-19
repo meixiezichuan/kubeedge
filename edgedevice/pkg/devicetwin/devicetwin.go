@@ -2,10 +2,10 @@ package devicetwin
 
 import (
 	"github.com/kubeedge/beehive/pkg/core"
-	"github.com/kubeedge/kubeedge/edge/pkg/common/modules"
-	deviceconfig "github.com/kubeedge/kubeedge/edge/pkg/devicetwin/config"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcontext"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtmodule"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/common/modules"
+	deviceconfig "github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/config"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcontext"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtmodule"
 	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/edgecore/v1alpha2"
 )
 

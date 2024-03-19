@@ -4,7 +4,7 @@ import (
 	"github.com/beego/beego/orm"
 	"k8s.io/klog/v2"
 
-	"github.com/kubeedge/kubeedge/edge/pkg/common/dbm"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/common/dbm"
 )
 
 // DeviceAttr the struct of device attributes

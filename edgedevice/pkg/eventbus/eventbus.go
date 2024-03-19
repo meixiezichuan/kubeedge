@@ -10,12 +10,12 @@ import (
 
 	"github.com/kubeedge/beehive/pkg/core"
 	beehiveContext "github.com/kubeedge/beehive/pkg/core/context"
-	messagepkg "github.com/kubeedge/kubeedge/edge/pkg/common/message"
-	"github.com/kubeedge/kubeedge/edge/pkg/common/modules"
-	"github.com/kubeedge/kubeedge/edge/pkg/eventbus/common/util"
-	eventconfig "github.com/kubeedge/kubeedge/edge/pkg/eventbus/config"
-	"github.com/kubeedge/kubeedge/edge/pkg/eventbus/dao"
-	mqttBus "github.com/kubeedge/kubeedge/edge/pkg/eventbus/mqtt"
+	messagepkg "github.com/kubeedge/kubeedge/edgedevice/pkg/common/message"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/common/modules"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/eventbus/common/util"
+	eventconfig "github.com/kubeedge/kubeedge/edgedevice/pkg/eventbus/config"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/eventbus/dao"
+	mqttBus "github.com/kubeedge/kubeedge/edgedevice/pkg/eventbus/mqtt"
 	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/edgecore/v1alpha2"
 )
 

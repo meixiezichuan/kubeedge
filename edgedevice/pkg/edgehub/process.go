@@ -9,12 +9,12 @@ import (
 
 	beehiveContext "github.com/kubeedge/beehive/pkg/core/context"
 	"github.com/kubeedge/beehive/pkg/core/model"
-	connect "github.com/kubeedge/kubeedge/edge/pkg/common/cloudconnection"
-	messagepkg "github.com/kubeedge/kubeedge/edge/pkg/common/message"
-	"github.com/kubeedge/kubeedge/edge/pkg/common/modules"
-	"github.com/kubeedge/kubeedge/edge/pkg/edgehub/clients"
-	"github.com/kubeedge/kubeedge/edge/pkg/edgehub/common/msghandler"
-	"github.com/kubeedge/kubeedge/edge/pkg/edgehub/config"
+	connect "github.com/kubeedge/kubeedge/edgedevice/pkg/common/cloudconnection"
+	messagepkg "github.com/kubeedge/kubeedge/edgedevice/pkg/common/message"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/common/modules"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/edgehub/clients"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/edgehub/common/msghandler"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/edgehub/config"
 )
 
 var groupMap = map[string]string{

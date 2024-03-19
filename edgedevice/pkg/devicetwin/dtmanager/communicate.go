@@ -12,10 +12,10 @@ import (
 
 	beehiveContext "github.com/kubeedge/beehive/pkg/core/context"
 	"github.com/kubeedge/beehive/pkg/core/model"
-	connect "github.com/kubeedge/kubeedge/edge/pkg/common/cloudconnection"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcommon"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcontext"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dttype"
+	connect "github.com/kubeedge/kubeedge/edgedevice/pkg/common/cloudconnection"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcommon"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcontext"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dttype"
 )
 
 var (

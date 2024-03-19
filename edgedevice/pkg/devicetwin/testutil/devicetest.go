@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dttype"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dttype"
 )
 
 // GenerateAddDevicePalyloadMsg generates content for adding device payload message

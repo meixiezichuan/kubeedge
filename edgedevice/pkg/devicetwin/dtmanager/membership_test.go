@@ -26,8 +26,8 @@ import (
 	"github.com/golang/mock/gomock"
 
 	"github.com/kubeedge/beehive/pkg/core/model"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcontext"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dttype"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcontext"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dttype"
 	"github.com/kubeedge/kubeedge/pkg/testtools"
 )
 

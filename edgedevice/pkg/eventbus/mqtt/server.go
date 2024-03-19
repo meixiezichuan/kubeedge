@@ -23,7 +23,7 @@ import (
 	"github.com/256dpi/gomqtt/transport"
 	"k8s.io/klog/v2"
 
-	"github.com/kubeedge/kubeedge/edge/pkg/eventbus/dao"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/eventbus/dao"
 )
 
 // Server serve as an internal mqtt broker.

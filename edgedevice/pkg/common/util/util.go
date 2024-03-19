@@ -22,7 +22,7 @@ import (
 	beehiveContext "github.com/kubeedge/beehive/pkg/core/context"
 	"github.com/kubeedge/beehive/pkg/core/model"
 	"github.com/kubeedge/kubeedge/common/types"
-	"github.com/kubeedge/kubeedge/edge/pkg/common/modules"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/common/modules"
 )
 
 func ReportTaskResult(taskType, taskID string, resp types.NodeTaskResponse) {

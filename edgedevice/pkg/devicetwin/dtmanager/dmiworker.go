@@ -27,12 +27,11 @@ import (
 
 	"github.com/kubeedge/beehive/pkg/core/model"
 	"github.com/kubeedge/kubeedge/cloud/pkg/devicecontroller/constants"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dmiclient"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dmiserver"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcommon"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcontext"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dttype"
-	"github.com/kubeedge/kubeedge/edge/pkg/metamanager/dao"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dmiclient"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dmiserver"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcommon"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcontext"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dttype"
 	"github.com/kubeedge/kubeedge/pkg/apis/devices/v1beta1"
 	pb "github.com/kubeedge/kubeedge/pkg/apis/dmi/v1beta1"
 	"github.com/kubeedge/kubeedge/pkg/util"
@@ -58,9 +57,6 @@ func (dw *DMIWorker) init() {
 	}
 
 	dw.initDMIActionCallBack()
-	dw.initDeviceModelInfoFromDB()
-	dw.initDeviceInfoFromDB()
-	dw.initDeviceMapperInfoFromDB()
 }
 
 // Start worker
@@ -196,66 +192,4 @@ func (dw *DMIWorker) dealMetaDeviceOperation(context *dtcontext.DTContext, resou
 	}
 
 	return nil
-}
-
-func (dw *DMIWorker) initDeviceModelInfoFromDB() {
-	metas, err := dao.QueryMeta("type", constants.ResourceTypeDeviceModel)
-	if err != nil {
-		klog.Errorf("fail to init device model info from db with err: %v", err)
-		return
-	}
-
-	for _, meta := range *metas {
-		deviceModel := v1beta1.DeviceModel{}
-		if err := json.Unmarshal([]byte(meta), &deviceModel); err != nil {
-			klog.Errorf("fail to unmarshal device model info from db with err: %v", err)
-			return
-		}
-		deviceModelID := util.GetResourceID(deviceModel.Namespace, deviceModel.Name)
-		dw.dmiCache.DeviceModelMu.Lock()
-		dw.dmiCache.DeviceModelList[deviceModelID] = &deviceModel
-		dw.dmiCache.DeviceModelMu.Unlock()
-	}
-	klog.Infoln("success to init device model info from db")
-}
-
-func (dw *DMIWorker) initDeviceInfoFromDB() {
-	metas, err := dao.QueryMeta("type", constants.ResourceTypeDevice)
-	if err != nil {
-		klog.Errorf("fail to init device info from db with err: %v", err)
-		return
-	}
-
-	for _, meta := range *metas {
-		device := v1beta1.Device{}
-		if err := json.Unmarshal([]byte(meta), &device); err != nil {
-			klog.Errorf("fail to unmarshal device info from db with err: %v", err)
-			return
-		}
-		deviceID := util.GetResourceID(device.Namespace, device.Name)
-		dw.dmiCache.DeviceMu.Lock()
-		dw.dmiCache.DeviceList[deviceID] = &device
-		dw.dmiCache.DeviceMu.Unlock()
-	}
-	klog.Infoln("success to init device info from db")
-}
-
-func (dw *DMIWorker) initDeviceMapperInfoFromDB() {
-	metas, err := dao.QueryMeta("type", constants.ResourceTypeDeviceMapper)
-	if err != nil {
-		klog.Errorf("fail to init device mapper info from db with err: %v", err)
-		return
-	}
-
-	for _, meta := range *metas {
-		deviceMapper := pb.MapperInfo{}
-		if err := json.Unmarshal([]byte(meta), &deviceMapper); err != nil {
-			klog.Errorf("fail to unmarshal device mapper info from db with err: %v", err)
-			return
-		}
-		dw.dmiCache.MapperMu.Lock()
-		dw.dmiCache.MapperList[deviceMapper.Name] = &deviceMapper
-		dw.dmiCache.MapperMu.Unlock()
-	}
-	klog.Infoln("success to init device mapper info from db")
 }

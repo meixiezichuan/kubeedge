@@ -25,7 +25,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcommon"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcommon"
 )
 
 // TestSetEventID is function to test SetEventID().

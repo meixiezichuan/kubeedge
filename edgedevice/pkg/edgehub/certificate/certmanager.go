@@ -24,8 +24,8 @@ import (
 	"k8s.io/klog/v2"
 
 	"github.com/kubeedge/kubeedge/common/constants"
-	"github.com/kubeedge/kubeedge/edge/pkg/edgehub/common/certutil"
-	"github.com/kubeedge/kubeedge/edge/pkg/edgehub/common/http"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/edgehub/common/certutil"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/edgehub/common/http"
 	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/edgecore/v1alpha2"
 )
 

@@ -10,10 +10,10 @@ import (
 	"github.com/kubeedge/beehive/pkg/core"
 	beehiveContext "github.com/kubeedge/beehive/pkg/core/context"
 	"github.com/kubeedge/beehive/pkg/core/model"
-	"github.com/kubeedge/kubeedge/edge/mocks/beego"
-	"github.com/kubeedge/kubeedge/edge/mocks/beehive"
-	"github.com/kubeedge/kubeedge/edge/pkg/common/dbm"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcommon"
+	"github.com/kubeedge/kubeedge/edgedevice/mocks/beego"
+	"github.com/kubeedge/kubeedge/edgedevice/mocks/beehive"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/common/dbm"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcommon"
 )
 
 const (

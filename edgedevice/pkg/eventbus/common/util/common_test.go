@@ -29,7 +29,7 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"k8s.io/klog/v2"
 
-	eventconfig "github.com/kubeedge/kubeedge/edge/pkg/eventbus/config"
+	eventconfig "github.com/kubeedge/kubeedge/edgedevice/pkg/eventbus/config"
 	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/edgecore/v1alpha2"
 )
 

@@ -3,9 +3,9 @@ package dtmodule
 import (
 	"k8s.io/klog/v2"
 
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcommon"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtcontext"
-	"github.com/kubeedge/kubeedge/edge/pkg/devicetwin/dtmanager"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcommon"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcontext"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtmanager"
 )
 
 // DTModule module for devicetwin
