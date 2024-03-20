@@ -4,6 +4,7 @@ import (
 	"github.com/kubeedge/beehive/pkg/core"
 	"github.com/kubeedge/kubeedge/edgedevice/pkg/common/modules"
 	deviceconfig "github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/config"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtclient"
 	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtcontext"
 	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin/dtmodule"
 	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/edgecore/v1alpha2"
@@ -31,6 +32,7 @@ func newDeviceTwin(enable bool) *DeviceTwin {
 func Register(deviceTwin *v1alpha2.DeviceTwin, nodeName string) {
 	deviceconfig.InitConfigure(deviceTwin, nodeName)
 	dt := newDeviceTwin(deviceTwin.Enable)
+	dtclient.InitDBTable(dt)
 	core.Register(dt)
 }
 
