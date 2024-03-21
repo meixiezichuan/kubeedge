@@ -2,27 +2,25 @@ package app
 
 import (
 	"fmt"
-	"github.com/kubeedge/kubeedge/edgedevice/pkg/common/dbm"
 	"os"
 
 	"github.com/kubeedge/beehive/pkg/core"
 	"github.com/kubeedge/kubeedge/common/constants"
 	"github.com/kubeedge/kubeedge/edgedevice/cmd/edgedevice/app/options"
+	"github.com/kubeedge/kubeedge/edgedevice/pkg/common/dbm"
 	"github.com/kubeedge/kubeedge/edgedevice/pkg/devicetwin"
 	"github.com/kubeedge/kubeedge/edgedevice/pkg/edgehub"
 	"github.com/kubeedge/kubeedge/edgedevice/pkg/eventbus"
-	"github.com/spf13/cobra"
-	cliflag "k8s.io/component-base/cli/flag"
-	"k8s.io/component-base/cli/globalflag"
-	"k8s.io/component-base/term"
-	"k8s.io/klog/v2"
-
-	"github.com/kubeedge/kubeedge/pkg/apis/componentconfig/edgecore/v1alpha2"
 	"github.com/kubeedge/kubeedge/pkg/features"
 	"github.com/kubeedge/kubeedge/pkg/util"
 	"github.com/kubeedge/kubeedge/pkg/util/flag"
 	utilvalidation "github.com/kubeedge/kubeedge/pkg/util/validation"
 	"github.com/kubeedge/kubeedge/pkg/version"
+	"github.com/spf13/cobra"
+	cliflag "k8s.io/component-base/cli/flag"
+	"k8s.io/component-base/cli/globalflag"
+	"k8s.io/component-base/term"
+	"k8s.io/klog/v2"
 )
 
 // NewEdgeCoreCommand create edgedevice cmd
@@ -32,8 +30,8 @@ func NewEdgeDeviceCommand() *cobra.Command {
 		Use:  "edgedevice",
 		Long: `Edgedevice is the component of device management on edge `,
 		Run: func(cmd *cobra.Command, args []string) {
-			flag.PrintMinConfigAndExitIfRequested(v1alpha2.NewMinEdgeCoreConfig())
-			flag.PrintDefaultConfigAndExitIfRequested(v1alpha2.NewDefaultEdgeCoreConfig())
+			flag.PrintMinConfigAndExitIfRequested(options.NewMinEdgeDeviceConfig())
+			flag.PrintDefaultConfigAndExitIfRequested(options.NewDefaultEdgeDeviceConfig())
 			flag.PrintFlags(cmd.Flags())
 
 			if errs := opts.Validate(); len(errs) > 0 {
