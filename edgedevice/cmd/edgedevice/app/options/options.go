@@ -56,14 +56,6 @@ const (
 var edgeDeviceOptions *EdgeDeviceOptions
 var edgeDeviceConfig *EdgeDeviceConfig
 
-func GetEdgeCoreOptions() *EdgeDeviceOptions {
-	return edgeDeviceOptions
-}
-
-func GetEdgeCoreConfig() *EdgeDeviceConfig {
-	return edgeDeviceConfig
-}
-
 func NewEdgeDeviceOptions() *EdgeDeviceOptions {
 	edgeDeviceOptions = &EdgeDeviceOptions{
 		ConfigFile: path.Join(constants.DefaultConfigDir, "edgedevice.yaml"),

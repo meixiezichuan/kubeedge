@@ -81,12 +81,12 @@ func NewDefaultCloudCoreConfig() *CloudCoreConfig {
 					Address: "0.0.0.0",
 				},
 			},
-			EdgeController: &EdgeController{
-				Enable:              true,
-				NodeUpdateFrequency: 10,
-				Buffer:              getDefaultEdgeControllerBuffer(constants.DefaultNodeLimit),
-				Load:                getDefaultEdgeControllerLoad(constants.DefaultNodeLimit),
-			},
+			//EdgeController: &EdgeController{
+			//	Enable:              true,
+			//	NodeUpdateFrequency: 10,
+			//	Buffer:              getDefaultEdgeControllerBuffer(constants.DefaultNodeLimit),
+			//	Load:                getDefaultEdgeControllerLoad(constants.DefaultNodeLimit),
+			//},
 			DeviceController: &DeviceController{
 				Enable: true,
 				Buffer: &DeviceControllerBuffer{
@@ -98,43 +98,43 @@ func NewDefaultCloudCoreConfig() *CloudCoreConfig {
 					UpdateDeviceStatusWorkers: constants.DefaultUpdateDeviceStatusWorkers,
 				},
 			},
-			TaskManager: &TaskManager{
-				Enable: false,
-				Buffer: &TaskManagerBuffer{
-					TaskStatus: constants.DefaultNodeUpgradeJobStatusBuffer,
-					TaskEvent:  constants.DefaultNodeUpgradeJobEventBuffer,
-				},
-				Load: &TaskManagerLoad{
-					TaskWorkers: constants.DefaultNodeUpgradeJobWorkers,
-				},
-			},
-			SyncController: &SyncController{
-				Enable: true,
-			},
-			DynamicController: &DynamicController{
-				Enable: false,
-			},
-			CloudStream: &CloudStream{
-				Enable:                  false,
-				TLSTunnelCAFile:         constants.DefaultCAFile,
-				TLSTunnelCertFile:       constants.DefaultCertFile,
-				TLSTunnelPrivateKeyFile: constants.DefaultKeyFile,
-				TunnelPort:              constants.DefaultTunnelPort,
-				TLSStreamCAFile:         constants.DefaultStreamCAFile,
-				TLSStreamCertFile:       constants.DefaultStreamCertFile,
-				TLSStreamPrivateKeyFile: constants.DefaultStreamKeyFile,
-				StreamPort:              10003,
-			},
-			Router: &Router{
-				Enable:      false,
-				Address:     "0.0.0.0",
-				Port:        9443,
-				RestTimeout: 60,
-			},
-			IptablesManager: &IptablesManager{
-				Enable: true,
-				Mode:   InternalMode,
-			},
+			//TaskManager: &TaskManager{
+			//	Enable: false,
+			//	Buffer: &TaskManagerBuffer{
+			//		TaskStatus: constants.DefaultNodeUpgradeJobStatusBuffer,
+			//		TaskEvent:  constants.DefaultNodeUpgradeJobEventBuffer,
+			//	},
+			//	Load: &TaskManagerLoad{
+			//		TaskWorkers: constants.DefaultNodeUpgradeJobWorkers,
+			//	},
+			//},
+			//SyncController: &SyncController{
+			//	Enable: true,
+			//},
+			//DynamicController: &DynamicController{
+			//	Enable: false,
+			//},
+			//CloudStream: &CloudStream{
+			//	Enable:                  false,
+			//	TLSTunnelCAFile:         constants.DefaultCAFile,
+			//	TLSTunnelCertFile:       constants.DefaultCertFile,
+			//	TLSTunnelPrivateKeyFile: constants.DefaultKeyFile,
+			//	TunnelPort:              constants.DefaultTunnelPort,
+			//	TLSStreamCAFile:         constants.DefaultStreamCAFile,
+			//	TLSStreamCertFile:       constants.DefaultStreamCertFile,
+			//	TLSStreamPrivateKeyFile: constants.DefaultStreamKeyFile,
+			//	StreamPort:              10003,
+			//},
+			//Router: &Router{
+			//	Enable:      false,
+			//	Address:     "0.0.0.0",
+			//	Port:        9443,
+			//	RestTimeout: 60,
+			//},
+			//IptablesManager: &IptablesManager{
+			//	Enable: true,
+			//	Mode:   InternalMode,
+			//},
 		},
 	}
 	return c
