@@ -1,0 +1,11 @@
+[Unit]
+Description=edgedevice.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/edgedevice
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

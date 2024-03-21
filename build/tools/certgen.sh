@@ -58,7 +58,7 @@ genCertAndKey() {
     ensureCA
     local name=$1
     genCsr $name
-    genCert $name
+    genCert $@
 }
 
 stream() {
