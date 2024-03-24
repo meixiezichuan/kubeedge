@@ -209,35 +209,35 @@ func AdjustCloudCoreConfig(c *CloudCoreConfig) bool {
 		c.KubeAPIConfig.Burst = 10 * nodeLimit
 	}
 
-	if c.Modules.EdgeController.Load.QueryNodeWorkers < nodeLimit {
-		changed = true
-		c.Modules.EdgeController.Load.QueryNodeWorkers = nodeLimit
-	}
-
-	if c.Modules.EdgeController.Load.PatchNodeWorkers < 100+nodeLimit/50 {
-		changed = true
-		c.Modules.EdgeController.Load.PatchNodeWorkers = 100 + nodeLimit/50
-	}
-
-	if c.Modules.EdgeController.Load.CreateLeaseWorkers < nodeLimit {
-		changed = true
-		c.Modules.EdgeController.Load.CreateLeaseWorkers = nodeLimit
-	}
-
-	if c.Modules.EdgeController.Buffer.PatchNode < 1024+nodeLimit/2 {
-		changed = true
-		c.Modules.EdgeController.Buffer.PatchNode = 1024 + nodeLimit/2
-	}
-
-	if c.Modules.EdgeController.Buffer.QueryNode < 1024+nodeLimit {
-		changed = true
-		c.Modules.EdgeController.Buffer.QueryNode = 1024 + nodeLimit
-	}
-
-	if c.Modules.EdgeController.Buffer.CreateLease < 1024+nodeLimit {
-		changed = true
-		c.Modules.EdgeController.Buffer.CreateLease = 1024 + nodeLimit
-	}
+	//if c.Modules.EdgeController.Load.QueryNodeWorkers < nodeLimit {
+	//	changed = true
+	//	c.Modules.EdgeController.Load.QueryNodeWorkers = nodeLimit
+	//}
+	//
+	//if c.Modules.EdgeController.Load.PatchNodeWorkers < 100+nodeLimit/50 {
+	//	changed = true
+	//	c.Modules.EdgeController.Load.PatchNodeWorkers = 100 + nodeLimit/50
+	//}
+	//
+	//if c.Modules.EdgeController.Load.CreateLeaseWorkers < nodeLimit {
+	//	changed = true
+	//	c.Modules.EdgeController.Load.CreateLeaseWorkers = nodeLimit
+	//}
+	//
+	//if c.Modules.EdgeController.Buffer.PatchNode < 1024+nodeLimit/2 {
+	//	changed = true
+	//	c.Modules.EdgeController.Buffer.PatchNode = 1024 + nodeLimit/2
+	//}
+	//
+	//if c.Modules.EdgeController.Buffer.QueryNode < 1024+nodeLimit {
+	//	changed = true
+	//	c.Modules.EdgeController.Buffer.QueryNode = 1024 + nodeLimit
+	//}
+	//
+	//if c.Modules.EdgeController.Buffer.CreateLease < 1024+nodeLimit {
+	//	changed = true
+	//	c.Modules.EdgeController.Buffer.CreateLease = 1024 + nodeLimit
+	//}
 
 	return changed
 }
@@ -274,16 +274,16 @@ func NewMinCloudCoreConfig() *CloudCoreConfig {
 					Address: "0.0.0.0",
 				},
 			},
-			Router: &Router{
-				Enable:      false,
-				Address:     "0.0.0.0",
-				Port:        9443,
-				RestTimeout: 60,
-			},
-			IptablesManager: &IptablesManager{
-				Enable: true,
-				Mode:   InternalMode,
-			},
+			//Router: &Router{
+			//	Enable:      false,
+			//	Address:     "0.0.0.0",
+			//	Port:        9443,
+			//	RestTimeout: 60,
+			//},
+			//IptablesManager: &IptablesManager{
+			//	Enable: true,
+			//	Mode:   InternalMode,
+			//},
 		},
 	}
 }
