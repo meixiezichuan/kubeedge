@@ -39,11 +39,11 @@ func ValidateCloudCoreConfiguration(c *v1alpha1.CloudCoreConfig) field.ErrorList
 	allErrs = append(allErrs, ValidateKubeAPIConfig(*c.KubeAPIConfig)...)
 	allErrs = append(allErrs, ValidateCommonConfig(*c.CommonConfig)...)
 	allErrs = append(allErrs, ValidateModuleCloudHub(*c.Modules.CloudHub)...)
-	allErrs = append(allErrs, ValidateModuleEdgeController(*c.Modules.EdgeController)...)
+	//allErrs = append(allErrs, ValidateModuleEdgeController(*c.Modules.EdgeController)...)
 	allErrs = append(allErrs, ValidateModuleDeviceController(*c.Modules.DeviceController)...)
-	allErrs = append(allErrs, ValidateModuleSyncController(*c.Modules.SyncController)...)
-	allErrs = append(allErrs, ValidateModuleDynamicController(*c.Modules.DynamicController)...)
-	allErrs = append(allErrs, ValidateModuleCloudStream(*c.Modules.CloudStream)...)
+	//allErrs = append(allErrs, ValidateModuleSyncController(*c.Modules.SyncController)...)
+	//allErrs = append(allErrs, ValidateModuleDynamicController(*c.Modules.DynamicController)...)
+	//allErrs = append(allErrs, ValidateModuleCloudStream(*c.Modules.CloudStream)...)
 	return allErrs
 }
 
