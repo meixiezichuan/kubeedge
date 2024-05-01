@@ -220,8 +220,8 @@ jobs:
         run: |
           containerd config default | sudo tee /etc/containerd/config.toml && sudo systemctl restart containerd.service
 
-      # for QUIC protocol, we will use docker as edgecore container runtime
-      # for WebSocket protocol, we will use containerd as edgecore container runtime
+      # for QUIC protocol, we will use docker as edgedevice container runtime
+      # for WebSocket protocol, we will use containerd as edgedevice container runtime
       # just for covering both docker and CRI runtime e2e cases
       - run: |
           export PROTOCOL=${{ matrix.cases.protocol }}
